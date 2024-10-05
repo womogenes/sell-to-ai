@@ -15,6 +15,7 @@ SCENARIOS = [s[:-1] + "!" for s in SCENARIOS]
 with open("english_nouns.txt") as f:
     NOUN_LIST = f.read()
 NOUN_LIST = NOUN_LIST.split("\n")
+
 class ConvincingGame:
     def __init__(self):
         self.players: List[str] = []
@@ -54,8 +55,10 @@ class ConvincingGame:
             self.pitches[player] = pitch
             return True
         return False
+    
     def get_evaluation_prompt(self):
         return "\n".join([f"{self.players[i]} suggests buying: {self.items[i]}. Reasoning: {self.pitches[self.players[i]]}" for i in range(len(self.players))])
+    
     def process_pitches(self):
         # Call the OpenAI API to evaluate the pitches
         response = client.chat.completions.create(

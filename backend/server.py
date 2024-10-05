@@ -97,6 +97,7 @@ async def websocket_endpoint(websocket: WebSocket, game_code: str):
                 data = await websocket.receive_text()
                 print(f"Received from {username}: {data}")
                 data = json.loads(data)
+                print("data:", data)
                 if data["type"] == "start_game":
                     tasks = convincing_game.start_game()
                     await connection_manager.broadcast(json.dumps({"type": "game_started", "tasks": tasks}))
@@ -114,6 +115,7 @@ async def websocket_endpoint(websocket: WebSocket, game_code: str):
                 continue
 
             #await connection_manager.broadcast_user_message(websocket, data)
+
     except WebSocketDisconnect:
         connection_manager.remove_connection(websocket)
         users_list = list(connection_manager.connections.values())

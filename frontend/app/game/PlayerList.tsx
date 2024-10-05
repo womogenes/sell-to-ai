@@ -1,4 +1,14 @@
-export default function PlayerList({ players }: { players: any[] }) {
+import { cn } from '@/lib/utils';
+
+export default function PlayerList({
+  players,
+  username,
+  isGameStarted,
+}: {
+  players: any[];
+  username: string;
+  isGameStarted: boolean;
+}) {
   return (
     <div className="my-auto flex flex-col gap-2">
       <h1 className="text-xl font-bold">
@@ -12,11 +22,14 @@ export default function PlayerList({ players }: { players: any[] }) {
         {players.map((name: string) => {
           return (
             <div
-              className="flex items-center gap-0 rounded-l-full bg-neutral-100"
+              className={cn(
+                username === name ? 'bg-orange-200' : 'bg-neutral-100',
+                'flex items-center gap-0 rounded-l-full',
+              )}
               key={name}
             >
               <img
-                className="m-2 ml-3 mr-1 aspect-square h-6 w-6 rounded-full"
+                className="m-2 ml-3 mr-2 aspect-square h-6 w-6 rounded-full bg-white"
                 src={`https://robohash.org/${name}.png?set=set3`}
                 alt="profile"
               />{' '}
@@ -27,7 +40,10 @@ export default function PlayerList({ players }: { players: any[] }) {
         {[...new Array(10 - players.length)].map((_, i) => {
           return (
             <div
-              className="flex rounded-l-full bg-neutral-100 px-10 py-2 text-neutral-400"
+              className={cn(
+                'flex rounded-l-full bg-neutral-100 px-11 py-2 text-neutral-400',
+                isGameStarted ? 'invisible' : 'visible',
+              )}
               key={i}
             >
               waiting for players...

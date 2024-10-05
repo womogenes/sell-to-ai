@@ -50,9 +50,11 @@ export default function Game() {
   // On socket change
   useEffect(() => {
     if (!socket) return;
+
     socket.onopen = () => {
       console.log('Connected to websocket server');
-      setIsConnected(true);
+      if (username) joinGame();
+      setTimeout(() => setIsConnected(true), 500);
     };
     socket.onmessage = (e: { data: string }) => {
       try {
@@ -88,7 +90,8 @@ export default function Game() {
   // Join game handler
   const joinGame = () => {
     setIsJoining(true);
-    socket.send(JSON.stringify({ username }));
+    socket.send(JSON.stringify({ type: 'join', username }));
+    localStorage.setItem('username', username);
   };
 
   const startGame = () => {
@@ -118,7 +121,11 @@ export default function Game() {
       )}
 
       {/* List of players */}
-      <PlayerList players={players} />
+      <PlayerList
+        players={players}
+        username={username}
+        isGameStarted={isGameStarted}
+      />
     </div>
   );
 }
