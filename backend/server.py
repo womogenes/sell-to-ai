@@ -70,6 +70,7 @@ async def websocket_endpoint(websocket: WebSocket, game_code: str):
     await websocket.accept()
     
     connection_manager = game_manager.get_connection_manager(game_code)
+    convincing_game = game_manager.get_game(game_code)
     if not connection_manager:
         await websocket.send_text(f"Game {game_code} not found")
         await websocket.close()
@@ -86,6 +87,7 @@ async def websocket_endpoint(websocket: WebSocket, game_code: str):
         return
 
     connection_manager.add_connection(websocket, username)
+    convincing_game.add_player(username)
     players_list = list(connection_manager.connections.values())
     await connection_manager.broadcast(json.dumps({"type": "join", "players": players_list}))
 
@@ -96,18 +98,14 @@ async def websocket_endpoint(websocket: WebSocket, game_code: str):
                 print(f"Received from {username}: {data}")
                 data = json.loads(data)
                 if data["type"] == "start_game":
-                    convincing_game = game_manager.get_game(game_code)
                     tasks = convincing_game.start_game()
                     await connection_manager.broadcast(json.dumps({"type": "game_started", "tasks": tasks}))
                 if data["type"] == "submit_pitch":
                     pitch = data["pitch"]
-                    convincing_game = game_manager.get_game(game_code)
                     if convincing_game.submit_pitch(username, pitch) and len(convincing_game.pitches) == len(convincing_game.players):
                         await connection_manager.broadcast(json.dumps({"type": "pitches_done"}))
                         model_response = convincing_game.process_pitches()
                         await connection_manager.broadcast(json.dumps({"type": "pitches_processed", "thoughts": model_response["thoughts"], "winner": model_response["winner"]}))
-                    else:
-                        await websocket.send_text("Pitch submission failed. Ensure the game has started and you are a player.")
 
             except json.JSONDecodeError:
                 await websocket.send_text("Error decoding JSON")

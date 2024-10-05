@@ -66,7 +66,7 @@ class ConvincingGame:
             ]
         )
         self.winner = new_response.choices[0].message.content
-        return {'thoughts': response.choices[0].message, 'winner': self.winner}
+        return {'thoughts': response.choices[0].message.content, 'winner': self.winner}
 
     def reset_game(self):
         self.prompts = {player: None for player in self.players}
