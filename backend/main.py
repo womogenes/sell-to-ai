@@ -11,6 +11,7 @@ client = OpenAI(api_key=api_key)
 class ConvincingGame:
     def __init__(self):
         self.players: List[str] = []
+        self.prompts: Dict[str, str] = {}
         self.pitches: Dict[str, str] = {}
         self.items: List[str] = self.get_items()
         self.winner: str = None
@@ -20,19 +21,21 @@ class ConvincingGame:
         return ["tent", "sleeping bag", "flashlight", "first aid kit", "food supplies"]
 
     def start_game(self):
+        if self.game_started:
+            return self.pitches
         if len(self.players) > len(self.items):
             return "Not enough items for all players."
         
         random.shuffle(self.items)
         for i, player in enumerate(self.players):
-            self.pitches[player] = f"Alice is going camping in Antarctica and needs supplies! She hasn't prepared at all yet. Convince Alice to buy {self.items[i]}!"
+            self.prompts[player] = f"Alice is going camping in Antarctica and needs supplies! She hasn't prepared at all yet. Convince Alice to buy {self.items[i]}!"
         self.game_started = True
-        return self.pitches
+        return self.prompts
 
     def add_player(self, player: str):
         if player not in self.players:
             self.players.append(player)
-            self.pitches[player] = None
+            self.prompts[player] = None
             return True
         return False
 
@@ -63,11 +66,11 @@ class ConvincingGame:
             ]
         )
         self.winner = new_response.choices[0].message.content
-        #self.announce_winner()
-        return self.winner
+        return {'thoughts': response.choices[0].message, 'winner': self.winner}
 
     def reset_game(self):
-        self.pitches = {player: None for player in self.players}
+        self.prompts = {player: None for player in self.players}
+        self.pitches = dict()
         self.winner = None
         self.game_started = False
 
