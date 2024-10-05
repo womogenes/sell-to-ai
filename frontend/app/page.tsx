@@ -1,13 +1,13 @@
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Image from "next/image";
 
 export default function Landing() {
   return (
     // Three columns
-    <div className="grid h-full w-full grid-cols-4 gap-4 p-6">
+    <div className="flex h-full w-full flex-col gap-4 p-6 md:flex-row">
       {/* Left column */}
-      <div className="flex flex-col justify-center">
+      <div className="flex w-full flex-col justify-center md:max-w-60">
         <h2 className="text-xl font-bold">How to Play</h2>
         <ol className="list-decimal pl-6">
           <li>Create a game and invite up to 10 players</li>
@@ -21,7 +21,7 @@ export default function Landing() {
       </div>
 
       {/* Middle column */}
-      <div className="col-span-2 flex flex-col items-center justify-center gap-3">
+      <div className="col-span-2 flex w-full flex-col items-center justify-center gap-3">
         <img
           className="w-1/2"
           src="https://www.pngkey.com/png/full/805-8051416_monopoly-man.png"
@@ -37,7 +37,7 @@ export default function Landing() {
       </div>
 
       {/* Right column */}
-      <div className="flex flex-col justify-center gap-2">
+      <div className="flex w-full flex-col justify-center gap-2 md:max-w-60">
         <div className="flex flex-col gap-2 rounded-md border-2 p-4">
           <label htmlFor="room-code-input" className="absolute -top-full">
             Room code
@@ -48,7 +48,9 @@ export default function Landing() {
             id="room-code-input"
           />
           <p className="mx-auto">or</p>
-          <Button>Create room</Button>
+          <a className={buttonVariants()} href="/game">
+            Create room
+          </a>
         </div>
       </div>
     </div>
