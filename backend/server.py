@@ -50,13 +50,9 @@ class GameManager:
         return game_code
 
     def get_connection_manager(self, game_code: str) -> ConnectionManager:
-        if not game_code in self.games:
-            self.create_game(game_code)
         return self.games.get(game_code).connection_manager
     
-    def get_game(self, game_code: str) -> ConvincingGame:        
-        if not game_code in self.games:
-            self.create_game(game_code)
+    def get_game(self, game_code: str) -> ConvincingGame:
         return self.games.get(game_code).convincing_game
 
     def remove_game(self, game_code: str):

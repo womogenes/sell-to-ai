@@ -20,7 +20,7 @@ export default function Landing() {
 
   return (
     // Two columns
-    <div className="p-6">
+    <div className="flex h-full flex-col justify-center p-6">
       {/* Title */}
       <div className="flex w-full flex-col items-center justify-center gap-3">
         <img
@@ -32,7 +32,7 @@ export default function Landing() {
           <h1 className="absolute left-1 top-1 whitespace-pre opacity-20">
             Sell to AI
           </h1>
-          <h1 className="whitespace-pre opacity-80">Sell to AI</h1>
+          <h1 className="-mb-3 whitespace-pre opacity-80">Sell to AI</h1>
         </div>
         <p>be the best salesperson</p>
       </div>
@@ -40,7 +40,7 @@ export default function Landing() {
       <div className="flex w-full flex-col justify-center gap-x-6 gap-y-6 p-6 md:flex-row">
         {/* Left column */}
         <div className="flex flex-col justify-center md:max-w-72">
-          <Card className="p-12">
+          <div className="p-12">
             <h2 className="text-xl font-bold">How to Play</h2>
             <Carousel
               className="w-full"
@@ -66,7 +66,7 @@ export default function Landing() {
               <CarouselPrevious />
               <CarouselNext />
             </Carousel>
-          </Card>
+          </div>
         </div>
 
         {/* Right column */}
@@ -76,7 +76,7 @@ export default function Landing() {
               Game code
             </label>
             <Input
-              className="text-center"
+              className="text-center font-mono text-base"
               placeholder="Game code"
               id="game-code-input"
               value={gameCode}
