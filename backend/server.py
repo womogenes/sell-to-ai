@@ -2,6 +2,8 @@ from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from typing import Dict, Tuple
 import uuid
 import json
+from main import ConvincingGame
+from collections import namedtuple
 from fastapi.middleware.cors import CORSMiddleware
 import random
 
@@ -35,17 +37,22 @@ class ConnectionManager:
         username = self.connections.get(websocket, "Unknown")
         await self.broadcast(f"{username} says: {message}")
 
+GameSession = namedtuple('GameSession', ['connection_manager', 'convincing_game'])
+
 class GameManager:
     def __init__(self):
-        self.games: Dict[str, ConnectionManager] = {}
+        self.games: Dict[str, GameSession] = {}
 
     def create_game(self) -> str:
         game_code = str(random.randrange(0, 10000)).zfill(4)
-        self.games[game_code] = ConnectionManager(game_code)
+        self.games[game_code] = GameSession(connection_manager=ConnectionManager(game_code), convincing_game=ConvincingGame())
         return game_code
 
-    def get_game(self, game_code: str) -> ConnectionManager:
-        return self.games.get(game_code)
+    def get_connection_manager(self, game_code: str) -> ConnectionManager:
+        return self.games.get(game_code).connection_manager
+    
+    def get_game(self, game_code: str) -> ConvincingGame:
+        return self.games.get(game_code).convincing_game
 
     def remove_game(self, game_code: str):
         if game_code in self.games:
@@ -56,7 +63,7 @@ game_manager = GameManager()
 @app.websocket("/ws/{game_code}")
 async def websocket_endpoint(websocket: WebSocket, game_code: str):
     await websocket.accept()
-    connection_manager = game_manager.get_game(game_code)
+    connection_manager = game_manager.get_connection_manager(game_code)
     if not connection_manager:
         await websocket.send_text(f"Game {game_code} not found")
         await websocket.close()
