@@ -77,6 +77,7 @@ export default function Game() {
         }
         if (data.type === 'game_started') {
           console.log('tasks:', data.tasks);
+          setIsGameStarted(true);
         }
       } catch (e) {
         console.log(e);

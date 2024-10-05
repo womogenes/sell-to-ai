@@ -24,7 +24,7 @@ class ConvincingGame:
         self.winner: str = None
         self.game_started: bool = False
         self.scenario = random.choice(SCENARIOS)
-        self.scores = Dict[str, int] = {}
+        self.scores: Dict[str, int] = {}
 
     def get_items(self):
         return NOUN_LIST
