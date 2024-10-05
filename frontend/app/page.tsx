@@ -1,22 +1,50 @@
-import { buttonVariants } from '@/components/ui/button';
+'use client';
+
+import { Button, buttonVariants } from '@/components/ui/button';
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from '@/components/ui/carousel';
 import { Input } from '@/components/ui/input';
+import { Card } from '@/components/ui/card';
+import Autoplay from 'embla-carousel-autoplay';
 
 export default function Landing() {
   return (
     // Three columns
     <div className="flex h-full w-full flex-col gap-x-6 gap-y-6 p-6 md:flex-row">
       {/* Left column */}
-      <div className="flex w-full flex-col justify-center md:max-w-60">
-        <h2 className="text-xl font-bold">How to Play</h2>
-        <ol className="list-decimal pl-6">
-          <li>Create a game and invite up to 10 players</li>
-          <li>
-            AI chooses a scenario and gives each player an item that would be
-            useful in the scenario
-          </li>
-          <li>Players must convince the AI why it should buy the item</li>
-          <li>AI chooses 2 players to buy from</li>
-        </ol>
+      <div className="flex flex-col justify-center md:max-w-72">
+        <Card className="px-12">
+          <h2 className="text-xl font-bold">How to Play</h2>
+          <Carousel
+            className="w-full"
+            plugins={[
+              Autoplay({
+                delay: 5000,
+              }),
+            ]}
+          >
+            <CarouselContent>
+              <CarouselItem>
+                1. Create a game and invite up to 10 players
+              </CarouselItem>
+              <CarouselItem>
+                2. AI chooses a scenario and gives each player an item that
+                would be useful in the scenario
+              </CarouselItem>
+              <CarouselItem>
+                3. Players must convince the AI why it should buy the item
+              </CarouselItem>
+              <CarouselItem>4. AI chooses 2 players to buy from</CarouselItem>
+            </CarouselContent>
+            <CarouselPrevious />
+            <CarouselNext />
+          </Carousel>
+        </Card>
       </div>
 
       {/* Middle column */}
@@ -37,7 +65,7 @@ export default function Landing() {
 
       {/* Right column */}
       <div className="flex w-full flex-col justify-center gap-2 md:max-w-60">
-        <div className="flex flex-col gap-2 rounded-md border-2 p-4">
+        <Card className="flex flex-col p-4">
           <label htmlFor="game-code-input" className="absolute -top-full">
             Game code
           </label>
@@ -50,7 +78,7 @@ export default function Landing() {
           <a className={buttonVariants()} href="/game">
             Create game
           </a>
-        </div>
+        </Card>
       </div>
     </div>
   );
