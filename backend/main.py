@@ -8,27 +8,30 @@ load_dotenv()
 api_key = os.getenv("OPENAI_API_KEY")
 client = OpenAI(api_key=api_key)
 
-with open("scenarios.txt", encoding="utf8") as f:
-    SCENARIOS = f.read()
-SCENARIOS = SCENARIOS.split("\n")
-SCENARIOS = [s[:-1] + "!" for s in SCENARIOS]
-with open("english_nouns.txt", encoding="utf8") as f:
-    NOUN_LIST = f.read()
-NOUN_LIST = NOUN_LIST.split("\n")
+# with open("scenarios.txt", encoding="utf8") as f:
+#     SCENARIOS = f.read()
+# SCENARIOS = SCENARIOS.split("\n")
+# SCENARIOS = [s[:-1] + "!" for s in SCENARIOS]
+# with open("english_nouns.txt", encoding="utf8") as f:
+#     NOUN_LIST = f.read()
+# NOUN_LIST = NOUN_LIST.split("\n")
 
+with open("scenarios_with_answers.json", encoding="utf8") as f:
+    SCENARIOS_WITH_ANSWERS = f.read()
 class ConvincingGame:
     def __init__(self):
         self.players: List[str] = []
         self.prompts: Dict[str, str] = {}
         self.pitches: Dict[str, str] = {}
-        self.items: List[str] = self.get_items()
         self.winner: str = None
         self.game_started: bool = False
-        self.scenario = random.choice(SCENARIOS)
+        scenario_with_answers = random.choice(SCENARIOS_WITH_ANSWERS)
+        self.scenario = scenario_with_answers["scenario"]
+        self.items: List[str] = scenario_with_answers["nouns"]
         self.scores: Dict[str, List[int]] = {}
 
     def get_items(self):
-        return NOUN_LIST
+        return self.items
 
     def start_game(self):
         if self.game_started:
@@ -89,10 +92,11 @@ class ConvincingGame:
     def reset_game(self):
         self.prompts: Dict[str, str] = {}
         self.pitches: Dict[str, str] = {}
-        self.items: List[str] = self.get_items()
         self.winner: str = None
         self.game_started: bool = False
-        self.scenario = random.choice(SCENARIOS)
+        scenario_with_answers = random.choice(SCENARIOS_WITH_ANSWERS)
+        self.scenario = scenario_with_answers["scenario"]
+        self.items: List[str] = scenario_with_answers["nouns"]
         return {'scores': self.scores}
 
     def serialize(self):
