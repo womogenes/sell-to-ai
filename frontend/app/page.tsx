@@ -28,11 +28,11 @@ export default function Landing() {
           src="https://www.pngkey.com/png/full/805-8051416_monopoly-man.png"
           alt="Monopoly man"
         ></img>
-        <div className="relative font-mono text-4xl font-black uppercase tracking-tighter transition-transform hover:scale-110 md:text-6xl">
+        <div className="relative text-4xl font-black uppercase tracking-tighter transition-transform hover:scale-110 md:text-6xl">
           <h1 className="absolute left-1 top-1 whitespace-pre opacity-20">
             Sell to AI
           </h1>
-          <h1 className="-mb-3 whitespace-pre opacity-80">Sell to AI</h1>
+          <h1 className="-mb-1 whitespace-pre opacity-80">Sell to AI</h1>
         </div>
         <p>be the best salesperson</p>
       </div>
@@ -41,7 +41,7 @@ export default function Landing() {
         {/* Left column */}
         <div className="flex flex-col justify-center md:max-w-72">
           <div className="p-12">
-            <h2 className="text-xl font-bold">How to Play</h2>
+            <h2 className="mb-4 text-xl font-bold">How to play</h2>
             <Carousel
               className="w-full"
               plugins={[
@@ -85,11 +85,11 @@ export default function Landing() {
                 setGameCode(e.target.value);
               }}
               onKeyDown={(e) =>
-                e.key === 'Enter' && router.push(`/game?g=${gameCode}`)
+                e.key === 'Enter' && router.push(`/lobby?g=${gameCode}`)
               }
             />
             <p className="mx-auto">or</p>
-            <a className={buttonVariants()} href="/game">
+            <a className={buttonVariants()} href="/lobby">
               Create game
             </a>
           </Card>

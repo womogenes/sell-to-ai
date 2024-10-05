@@ -7,7 +7,6 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { usePathname } from 'next/navigation';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
-import { io } from 'socket.io-client';
 import { cn } from '@/lib/utils';
 
 export default function Game() {
@@ -20,6 +19,7 @@ export default function Game() {
   // UI states
   const [isConnecting, setIsConnecting] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
+  const [isGameStarted, setIsGameStarted] = useState(true);
 
   // Important game-state variables
   const [players, setPlayers] = useState<any>([]);
@@ -71,6 +71,10 @@ export default function Game() {
     socket.send(JSON.stringify({ username: username }));
   };
 
+  const startGame = () => {
+    console.log('requested game start');
+  };
+
   return (
     <div className="flex h-full">
       {/* Main body */}
@@ -97,7 +101,7 @@ export default function Game() {
         {/* Name input or profile display */}
         <div className="h-20">
           {isConnected ? (
-            <div className="flex flex-col items-center gap-2">
+            <div className="flex flex-col items-center gap-4">
               <div className="flex items-center gap-2">
                 <img
                   className="aspect-square h-10 w-10 rounded-full border p-1"
@@ -107,7 +111,7 @@ export default function Game() {
                 <p>{username}</p>
               </div>
 
-              <Button>Start game</Button>
+              <Button onClick={startGame}>Start game</Button>
             </div>
           ) : (
             <div className="relative flex flex-col items-center gap-4">
