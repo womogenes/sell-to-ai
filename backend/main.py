@@ -90,6 +90,7 @@ class ConvincingGame:
         self.winner: str = None
         self.game_started: bool = False
         self.scenario = random.choice(SCENARIOS)
+        return {'scores': self.scores}
 
 if __name__ == "__main__":
     g = ConvincingGame()
