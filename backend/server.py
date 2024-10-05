@@ -68,7 +68,8 @@ async def websocket_endpoint(websocket: WebSocket, game_code: str):
         await websocket.send_text(f"Game {game_code} not found")
         await websocket.close()
         return
-
+    users_list = list(connection_manager.connections.values())
+    await websocket.send_text(json.dumps({"type": "connect", "users": users_list}))
     try:
         username_data = await websocket.receive_text()
         username_json = json.loads(username_data)
@@ -79,7 +80,8 @@ async def websocket_endpoint(websocket: WebSocket, game_code: str):
         return
 
     connection_manager.add_connection(websocket, username)
-    await connection_manager.broadcast(f"{username} joined the game")
+    users_list = list(connection_manager.connections.values())
+    await connection_manager.broadcast(json.dumps({"type": "join", "users": users_list}))
 
     try:
         while True:
@@ -88,7 +90,8 @@ async def websocket_endpoint(websocket: WebSocket, game_code: str):
             await connection_manager.broadcast_user_message(websocket, data)
     except WebSocketDisconnect:
         connection_manager.remove_connection(websocket)
-        await connection_manager.broadcast(f"{username} left the game")
+        users_list = list(connection_manager.connections.values())
+        await connection_manager.broadcast(json.dumps({"type": "disconnect", "users": users_list}))
 
 @app.get("/create_game")
 async def create_game():
