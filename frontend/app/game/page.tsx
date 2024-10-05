@@ -2,25 +2,25 @@
 
 import { SERVER_URL, SERVER_WEBSOCKET_URL } from '@/constants';
 import { useEffect, useState } from 'react';
-import { Loader2 } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { usePathname } from 'next/navigation';
-import { Textarea } from '@/components/ui/textarea';
-import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
 import Lobby from './Lobby';
 import PlayerList from './PlayerList';
+import { Loader2 } from 'lucide-react';
 
 export default function Game() {
   const [gameCode, setGameCode] = useState<string | null>(null);
-  const [username, setUsername] = useState<string>('');
+  const [username, setUsername] = useState<string>(
+    localStorage.getItem('username') || '',
+  );
   const router = useRouter();
   const pathname = usePathname();
   const params = useSearchParams();
 
   // UI states
-  const [isConnecting, setIsConnecting] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
+  const [isJoining, setIsJoining] = useState(false);
+  const [hasJoined, setHasJoined] = useState(false);
   const [isGameStarted, setIsGameStarted] = useState(false);
 
   // Important game-state variables
@@ -52,6 +52,7 @@ export default function Game() {
     if (!socket) return;
     socket.onopen = () => {
       console.log('Connected to websocket server');
+      setIsConnected(true);
     };
     socket.onmessage = (e: { data: string }) => {
       try {
@@ -59,20 +60,20 @@ export default function Game() {
         if (!data) return;
         console.log('ws data:', data);
 
+        // Handle errors
+        if (data.error) console.log('Error:', data.error);
+
         // Server always sends list of players
         if (data.players) setPlayers(data.players ?? []);
 
-        // Set username according to localStorage if it exists
-        if (
-          data.type === 'connect' &&
-          username &&
-          !data.players.includes(username)
-        ) {
-          joinGame();
+        if (data.type === 'connect') {
+          if (!username) localStorage.getItem('username');
+          if (username && !data.players.includes(username)) joinGame();
+          setIsGameStarted(data.game_started);
         }
         if (data.type === 'join' && data.players.includes(username)) {
-          setIsConnected(true);
-          setIsConnecting(false);
+          setHasJoined(true);
+          setIsJoining(false);
         }
         if (data.type === 'game_started') {
           console.log('tasks:', data.tasks);
@@ -85,7 +86,7 @@ export default function Game() {
 
   // Join game handler
   const joinGame = () => {
-    setIsConnecting(true);
+    setIsJoining(true);
     socket.send(JSON.stringify({ username }));
   };
 
@@ -96,17 +97,23 @@ export default function Game() {
   return (
     <div className="flex h-full">
       {isGameStarted ? (
-        <></>
-      ) : (
+        <div className="flex w-full items-center justify-center">
+          The game has started.
+        </div>
+      ) : isConnected ? (
         <Lobby
           gameCode={gameCode}
           username={username}
           setUsername={setUsername}
-          isConnected={isConnected}
-          isConnecting={isConnecting}
+          isJoining={isJoining}
+          hasJoined={hasJoined}
           startGame={startGame}
           joinGame={joinGame}
         />
+      ) : (
+        <div className="flex w-full items-center justify-center">
+          <Loader2 className="mr-2 animate-spin" /> Connecting to server...
+        </div>
       )}
 
       {/* List of players */}

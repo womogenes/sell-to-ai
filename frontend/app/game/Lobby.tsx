@@ -7,16 +7,16 @@ export default function Lobby({
   gameCode,
   username,
   setUsername,
-  isConnected,
-  isConnecting,
+  hasJoined,
+  isJoining,
   startGame,
   joinGame,
 }: {
   gameCode: string | null;
   username: string;
   setUsername: Function;
-  isConnected: boolean;
-  isConnecting: boolean;
+  hasJoined: boolean;
+  isJoining: boolean;
   startGame: any;
   joinGame: any;
 }) {
@@ -45,7 +45,7 @@ export default function Lobby({
 
         {/* Name input or profile display */}
         <div className="h-32 pt-2">
-          {isConnected ? (
+          {hasJoined ? (
             <div className="flex flex-col items-center gap-4">
               <div className="flex items-center gap-2">
                 <img
@@ -80,17 +80,17 @@ export default function Lobby({
                 maxLength={15}
                 spellCheck={false}
                 autoComplete="off"
-                disabled={isConnecting}
+                disabled={isJoining}
                 id="username-input"
               />
               <Button
-                disabled={username === '' || isConnecting}
+                disabled={username === '' || isJoining}
                 onClick={joinGame}
               >
                 <Loader2
                   className={cn(
                     'mr-2 h-4 w-4',
-                    isConnecting ? 'block animate-spin' : 'hidden',
+                    isJoining ? 'block animate-spin' : 'hidden',
                   )}
                 />{' '}
                 Join game
