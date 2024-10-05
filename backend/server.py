@@ -75,12 +75,8 @@ async def websocket_endpoint(websocket: WebSocket, game_code: str):
         await websocket.send_json({"error": f"Game {game_code} not found"})
         await websocket.close()
         return
-    if convincing_game.game_started:
-        await websocket.send_json({"error": f"Game {game_code} already started"})
-        await websocket.close()
-        return
     players_list = list(convincing_game.players)
-    await websocket.send_json({"type": "connect", "players": players_list})
+    await websocket.send_json({"type": "connect", "players": players_list, "game_started": convincing_game.game_started})
     try:
         username_data = await websocket.receive_text()
         username_json = json.loads(username_data)
