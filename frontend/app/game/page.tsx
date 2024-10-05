@@ -13,12 +13,25 @@ export default function Game() {
 
   // Create a game
   useEffect(() => {
+    const onHashChange = () => {
+      const gameCode = /#g=(.+)/g.exec(window.location.hash)?.[1];
+      if (gameCode) {
+        setGameCode(gameCode);
+        return true;
+      }
+      return false;
+    };
+    window.addEventListener("hashchange", onHashChange);
+    onHashChange();
+
     (async () => {
       const gameCode = await (await fetch(`${SERVER_URL}/create_game`)).json();
       setGameCode(gameCode.game_code);
       router.push(`${pathname}/#g=${gameCode.game_code}`);
     })();
-  }, []);
+
+    return () => window.removeEventListener("hashchange", onHashChange);
+  }, [router]);
 
   return (
     <div className="flex h-full items-center justify-center">
