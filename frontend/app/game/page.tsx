@@ -1,22 +1,23 @@
-"use client";
+'use client';
 
-import { SERVER_URL } from "@/constants";
-import { useEffect, useState } from "react";
-import { Loader2 } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { usePathname } from "next/navigation";
-import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
+import { SERVER_URL } from '@/constants';
+import { useEffect, useState } from 'react';
+import { Loader2 } from 'lucide-react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { usePathname } from 'next/navigation';
+import { Textarea } from '@/components/ui/textarea';
+import { Button } from '@/components/ui/button';
 
 export default function Game() {
   const [gameCode, setGameCode] = useState<string | null>(null);
-  const [username, setUsername] = useState<string>("");
+  const [username, setUsername] = useState<string>('');
   const router = useRouter();
   const pathname = usePathname();
+  const params = useSearchParams();
 
   // Create a game
   useEffect(() => {
-    const gameCode = /#g=(.+)/g.exec(window.location.hash)?.[1];
+    const gameCode = params.get('g');
     if (gameCode) {
       setGameCode(gameCode);
       return;
@@ -24,7 +25,7 @@ export default function Game() {
     (async () => {
       const gameCode = await (await fetch(`${SERVER_URL}/create_game`)).json();
       setGameCode(gameCode.game_code);
-      router.push(`${pathname}/#g=${gameCode.game_code}`);
+      router.push(`${pathname}/?g=${gameCode.game_code}`);
     })();
   }, [router]);
 
@@ -61,13 +62,13 @@ export default function Game() {
           placeholder="Your name..."
           value={username}
           onChange={(e) => setUsername(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && e.preventDefault()}
+          onKeyDown={(e) => e.key === 'Enter' && e.preventDefault()}
           maxLength={15}
           spellCheck={false}
           autoComplete="off"
           id="username-input"
         />
-        <Button disabled={username === ""}>Confirm</Button>
+        <Button disabled={username === ''}>Confirm</Button>
       </div>
     </div>
   );
