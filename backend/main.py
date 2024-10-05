@@ -8,11 +8,11 @@ load_dotenv()
 api_key = os.getenv("OPENAI_API_KEY")
 client = OpenAI(api_key=api_key)
 
-with open("scenarios.txt") as f:
+with open("scenarios.txt", encoding="utf8") as f:
     SCENARIOS = f.read()
 SCENARIOS = SCENARIOS.split("\n")
 SCENARIOS = [s[:-1] + "!" for s in SCENARIOS]
-with open("english_nouns.txt") as f:
+with open("english_nouns.txt", encoding="utf8") as f:
     NOUN_LIST = f.read()
 NOUN_LIST = NOUN_LIST.split("\n")
 

@@ -72,7 +72,7 @@ async def websocket_endpoint(websocket: WebSocket, game_code: str):
         await websocket.close()
         return
     players_list = list(convincing_game.players)
-    await websocket.send_json({"type": "connect", "state": convincing_game.serialize()}, ensure_ascii=False)
+    await websocket.send_json({"type": "connect", "state": convincing_game.serialize()})
     try:
         username_data = await websocket.receive_text()
         username_json = json.loads(username_data)
@@ -95,7 +95,7 @@ async def websocket_endpoint(websocket: WebSocket, game_code: str):
                 data = json.loads(data)
                 print("data:", data)
                 if data["type"] == "start_game":
-                    await connection_manager.broadcast(json.dumps({"type": "game_started", "state": convincing_game.serialize()}, ensure_ascii=False))
+                    await connection_manager.broadcast(json.dumps({"type": "game_started", "state": convincing_game.serialize()}))
                 if data["type"] == "submit_pitch":
                     pitch = data["pitch"]
                     if convincing_game.submit_pitch(username, pitch) and len(convincing_game.pitches) == len(convincing_game.players):
@@ -104,11 +104,11 @@ async def websocket_endpoint(websocket: WebSocket, game_code: str):
                         await connection_manager.broadcast(json.dumps({"type": "pitches_processed",
                                                                        "thoughts": model_response["thoughts"],
                                                                        "winner": model_response["winner"],
-                                                                       "state": convincing_game.serialize()}, ensure_ascii=False))
+                                                                       "state": convincing_game.serialize()}))
                         reset = convincing_game.reset_game()
                         await connection_manager.broadcast(json.dumps({"type": "new_round",
                                                                        "scores": reset["scores"],
-                                                                       "state": convincing_game.serialize()}, ensure_ascii=False))
+                                                                       "state": convincing_game.serialize()}))
 
             except json.JSONDecodeError:
                 await websocket.send_text("Error decoding JSON")
