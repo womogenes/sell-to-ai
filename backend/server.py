@@ -33,10 +33,6 @@ class ConnectionManager:
         for connection in self.connections:
             await connection.send_text(message)
 
-    async def broadcast_user_message(self, websocket: WebSocket, message: str):
-        username = self.connections.get(websocket, "Unknown")
-        await self.broadcast(f"{username} says: {message}")
-
 GameSession = namedtuple('GameSession', ['connection_manager', 'convincing_game'])
 
 class GameManager:
@@ -113,8 +109,6 @@ async def websocket_endpoint(websocket: WebSocket, game_code: str):
             except json.JSONDecodeError:
                 await websocket.send_text("Error decoding JSON")
                 continue
-
-            #await connection_manager.broadcast_user_message(websocket, data)
 
     except WebSocketDisconnect:
         connection_manager.remove_connection(websocket)
