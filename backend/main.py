@@ -8,6 +8,13 @@ load_dotenv()
 api_key = os.getenv("OPENAI_API_KEY")
 client = OpenAI(api_key=api_key)
 
+with open("scenarios.txt") as f:
+    SCENARIOS = f.read()
+SCENARIOS = SCENARIOS.split("\n")
+SCENARIOS = [s[:-1] + "!" for s in SCENARIOS]
+with open("english_nouns.txt") as f:
+    NOUN_LIST = f.read()
+NOUN_LIST = NOUN_LIST.split("\n")
 class ConvincingGame:
     def __init__(self):
         self.players: List[str] = []
@@ -16,9 +23,11 @@ class ConvincingGame:
         self.items: List[str] = self.get_items()
         self.winner: str = None
         self.game_started: bool = False
+        self.scenario = random.choice(SCENARIOS)
+        self.scores = Dict[str, int] = {}
 
     def get_items(self):
-        return ["tent", "sleeping bag", "flashlight", "first aid kit", "food supplies"]
+        return NOUN_LIST
 
     def start_game(self):
         if self.game_started:
@@ -28,7 +37,7 @@ class ConvincingGame:
         
         random.shuffle(self.items)
         for i, player in enumerate(self.players):
-            self.prompts[player] = f"Alice is going camping in Antarctica and needs supplies! She hasn't prepared at all yet. Convince Alice to buy {self.items[i]}!"
+            self.prompts[player] = f"{self.scenario} Convince Alice to buy: {self.items[i]}!"
         self.game_started = True
         return self.prompts
 
@@ -36,6 +45,7 @@ class ConvincingGame:
         if player not in self.players:
             self.players.append(player)
             self.prompts[player] = None
+            self.scores[player] = 0
             return True
         return False
 
@@ -51,7 +61,7 @@ class ConvincingGame:
         response = client.chat.completions.create(
             model="gpt-4o-mini",
             messages=[
-                {"role": "system", "content": "You are Alice, who is a role-playing a person who is going camping in Antarctica and needs supplies. Choose the answer suggested that you think would make the game most enjoyable, which should be the most surprising or funny one. Don't make your own twists on their suggestions. Reason before answering with the correct answer. It's not fun if you choose the most standard one."},
+                {"role": "system", "content": "You're Alice. You're playing a game with some other players. You're the judge of their responses. You love good humor and want the players to enjoy the game as much as possible, perhaps disregarding logic. Role-play a person who is going camping in Antarctica and needs supplies. Choose the answer suggested that you think would make the game most enjoyable, which should be the most surprising or funny one. Don't make your own twists on their suggestions when juding their suggestions. Reason before answering with the correct answer. It's not fun if you choose the most standard one."},
                 {"role": "user", "content": self.get_evaluation_prompt()}
             ]
         )
@@ -62,17 +72,21 @@ class ConvincingGame:
                 {"role": "system", "content": "You are a helpful assistant."},
                 {"role": "user", "content": self.get_evaluation_prompt()},
                 {"role": "assistant", "content": response.choices[0].message.content},
-                {"role": "user", "content": "Please reply with only the username of the winning player:"}
+                {"role": "user", "content": "Please reply with only the username of the winning player. Make sure to keep EXACT STRING AGREEMENT between your response and the username given:"}
             ]
         )
         self.winner = new_response.choices[0].message.content
-        return {'thoughts': response.choices[0].message.content, 'winner': self.winner}
+        if self.winner in self.players:
+            self.scores[self.winner] += 1
+        return {'thoughts': response.choices[0].message.content, 'winner': self.winner, 'scores': self.scores}
 
     def reset_game(self):
-        self.prompts = {player: None for player in self.players}
-        self.pitches = dict()
-        self.winner = None
-        self.game_started = False
+        self.prompts: Dict[str, str] = {}
+        self.pitches: Dict[str, str] = {}
+        self.items: List[str] = self.get_items()
+        self.winner: str = None
+        self.game_started: bool = False
+        self.scenario = random.choice(SCENARIOS)
 
 if __name__ == "__main__":
     g = ConvincingGame()

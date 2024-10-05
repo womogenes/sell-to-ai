@@ -79,7 +79,7 @@ async def websocket_endpoint(websocket: WebSocket, game_code: str):
         await websocket.send_json({"error": f"Game {game_code} already started"})
         await websocket.close()
         return
-    players_list = list(connection_manager.connections.values())
+    players_list = list(convincing_game.players)
     await websocket.send_json({"type": "connect", "players": players_list})
     try:
         username_data = await websocket.receive_text()
@@ -110,6 +110,8 @@ async def websocket_endpoint(websocket: WebSocket, game_code: str):
                         await connection_manager.broadcast(json.dumps({"type": "pitches_done"}))
                         model_response = convincing_game.process_pitches()
                         await connection_manager.broadcast(json.dumps({"type": "pitches_processed", "thoughts": model_response["thoughts"], "winner": model_response["winner"]}))
+                        reset = convincing_game.reset_game()
+                        await connection_manager.broadcast(json.dumps({"type": "new_round", "scores": reset["scores"]}))
 
             except json.JSONDecodeError:
                 await websocket.send_text("Error decoding JSON")
