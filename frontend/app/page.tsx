@@ -85,11 +85,11 @@ export default function Landing() {
                 setGameCode(e.target.value);
               }}
               onKeyDown={(e) =>
-                e.key === 'Enter' && router.push(`/lobby?g=${gameCode}`)
+                e.key === 'Enter' && router.push(`/game?g=${gameCode}`)
               }
             />
             <p className="mx-auto">or</p>
-            <a className={buttonVariants()} href="/lobby">
+            <a className={buttonVariants()} href="/game">
               Create game
             </a>
           </Card>
