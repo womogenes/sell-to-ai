@@ -2,8 +2,18 @@ from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from typing import Dict, Tuple
 import uuid
 import json
+from fastapi.middleware.cors import CORSMiddleware
+import random
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 class ConnectionManager:
     def __init__(self, game_code: str):
@@ -30,7 +40,7 @@ class GameManager:
         self.games: Dict[str, ConnectionManager] = {}
 
     def create_game(self) -> str:
-        game_code = str(uuid.uuid4())[:8]
+        game_code = str(random.randrange(0, 10000)).zfill(4)
         self.games[game_code] = ConnectionManager(game_code)
         return game_code
 

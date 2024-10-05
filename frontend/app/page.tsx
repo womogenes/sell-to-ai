@@ -1,11 +1,10 @@
-import { Button, buttonVariants } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import Image from "next/image";
 
 export default function Landing() {
   return (
     // Three columns
-    <div className="flex h-full w-full flex-col gap-4 p-6 md:flex-row">
+    <div className="flex h-full w-full flex-col gap-x-6 gap-y-6 p-6 md:flex-row">
       {/* Left column */}
       <div className="flex w-full flex-col justify-center md:max-w-60">
         <h2 className="text-xl font-bold">How to Play</h2>
@@ -27,7 +26,7 @@ export default function Landing() {
           src="https://www.pngkey.com/png/full/805-8051416_monopoly-man.png"
           alt="Monopoly man"
         ></img>
-        <div className="relative font-mono text-7xl font-black uppercase tracking-tighter transition-transform hover:scale-110">
+        <div className="relative font-mono text-4xl font-black uppercase tracking-tighter transition-transform hover:scale-110 md:text-6xl">
           <h1 className="absolute left-1 top-1 whitespace-pre opacity-20">
             Sell to AI
           </h1>
@@ -39,17 +38,17 @@ export default function Landing() {
       {/* Right column */}
       <div className="flex w-full flex-col justify-center gap-2 md:max-w-60">
         <div className="flex flex-col gap-2 rounded-md border-2 p-4">
-          <label htmlFor="room-code-input" className="absolute -top-full">
-            Room code
+          <label htmlFor="game-code-input" className="absolute -top-full">
+            Game code
           </label>
           <Input
             className="text-center"
-            placeholder="Room code"
-            id="room-code-input"
+            placeholder="Game code"
+            id="game-code-input"
           />
           <p className="mx-auto">or</p>
           <a className={buttonVariants()} href="/game">
-            Create room
+            Create game
           </a>
         </div>
       </div>
