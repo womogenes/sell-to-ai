@@ -1,23 +1,29 @@
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
-from typing import Dict, List
+from typing import Dict, Tuple
 import uuid
+import json
 
 app = FastAPI()
 
 class ConnectionManager:
     def __init__(self, game_code: str):
         self.game_code = game_code
-        self.connections: List[WebSocket] = []
+        self.connections: Dict[WebSocket, str] = {}
 
-    def add_connection(self, websocket: WebSocket):
-        self.connections.append(websocket)
+    def add_connection(self, websocket: WebSocket, username: str):
+        self.connections[websocket] = username
 
     def remove_connection(self, websocket: WebSocket):
-        self.connections.remove(websocket)
+        if websocket in self.connections:
+            del self.connections[websocket]
 
     async def broadcast(self, message: str):
         for connection in self.connections:
             await connection.send_text(message)
+
+    async def broadcast_user_message(self, websocket: WebSocket, message: str):
+        username = self.connections.get(websocket, "Unknown")
+        await self.broadcast(f"{username} says: {message}")
 
 class GameManager:
     def __init__(self):
@@ -45,15 +51,27 @@ async def websocket_endpoint(websocket: WebSocket, game_code: str):
         await websocket.send_text(f"Game {game_code} not found")
         await websocket.close()
         return
-    connection_manager.add_connection(websocket)
+
+    try:
+        username_data = await websocket.receive_text()
+        username_json = json.loads(username_data)
+        username = username_json["username"]
+    except (json.JSONDecodeError, KeyError):
+        await websocket.send_text("Invalid JSON format or missing 'username' key")
+        await websocket.close()
+        return
+
+    connection_manager.add_connection(websocket, username)
+    await connection_manager.broadcast(f"{username} joined the game")
+
     try:
         while True:
             data = await websocket.receive_text()
-            print(f"Received: {data}")
-            await connection_manager.broadcast(f"Client says: {data}")
+            print(f"Received from {username}: {data}")
+            await connection_manager.broadcast_user_message(websocket, data)
     except WebSocketDisconnect:
         connection_manager.remove_connection(websocket)
-        await connection_manager.broadcast(f"Client left the game")
+        await connection_manager.broadcast(f"{username} left the game")
 
 @app.get("/create_game")
 async def create_game():
