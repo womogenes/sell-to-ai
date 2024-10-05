@@ -24,7 +24,7 @@ class ConvincingGame:
         self.winner: str = None
         self.game_started: bool = False
         self.scenario = random.choice(SCENARIOS)
-        self.scores: Dict[str, int] = {}
+        self.scores: Dict[str, List[int]] = {}
 
     def get_items(self):
         return NOUN_LIST
@@ -45,7 +45,7 @@ class ConvincingGame:
         if player not in self.players:
             self.players.append(player)
             self.prompts[player] = None
-            self.scores[player] = 0
+            self.scores[player] = []
             return True
         return False
 
@@ -54,8 +54,10 @@ class ConvincingGame:
             self.pitches[player] = pitch
             return True
         return False
+
     def get_evaluation_prompt(self):
         return "\n".join([f"{self.players[i]} suggests buying: {self.items[i]}. Reasoning: {self.pitches[self.players[i]]}" for i in range(len(self.players))])
+
     def process_pitches(self):
         # Call the OpenAI API to evaluate the pitches
         response = client.chat.completions.create(
@@ -76,8 +78,11 @@ class ConvincingGame:
             ]
         )
         self.winner = new_response.choices[0].message.content
-        if self.winner in self.players:
-            self.scores[self.winner] += 1
+        for p in self.players:
+            if p == self.winner:
+                self.scores[p].append(1)
+            else:
+                self.scores[p].append(0)
         return {'thoughts': response.choices[0].message.content, 'winner': self.winner, 'scores': self.scores}
 
     def reset_game(self):
@@ -88,6 +93,18 @@ class ConvincingGame:
         self.game_started: bool = False
         self.scenario = random.choice(SCENARIOS)
         return {'scores': self.scores}
+
+    def jsonify(self):
+        return {
+            'players': self.players,
+            'prompts': self.prompts,
+            'items': {player: self.items[i] for i, player in enumerate(self.players)},
+            'pitches': self.pitches,
+            'winner': self.winner,
+            'game_started': self.game_started,
+            'scenario': self.scenario,
+            'scores': self.scores
+        }
 
 if __name__ == "__main__":
     g = ConvincingGame()
