@@ -54,20 +54,31 @@ export default function Game() {
       console.log('Connected to websocket server');
     };
     socket.onmessage = (e: { data: string }) => {
-      console.log(e.data);
+      try {
+        const data = JSON.parse(e.data);
+        if (!data) return;
+        console.log('ws data:', data);
 
-      const data = JSON.parse(e.data);
-      if (!data) return;
-      console.log('ws data:', data);
+        // Server always sends list of players
+        if (data.players) setPlayers(data.players ?? []);
 
-      // Server always sends list of players
-      setPlayers(data.players ?? []);
-      if (data.type === 'join' && data.players.includes(username)) {
-        setIsConnected(true);
-        setIsConnecting(false);
-      }
-      if (data.type === 'game_started') {
-        console.log('tasks:', data.tasks);
+        // Set username according to localStorage if it exists
+        if (
+          data.type === 'connect' &&
+          username &&
+          !data.players.includes(username)
+        ) {
+          joinGame();
+        }
+        if (data.type === 'join' && data.players.includes(username)) {
+          setIsConnected(true);
+          setIsConnecting(false);
+        }
+        if (data.type === 'game_started') {
+          console.log('tasks:', data.tasks);
+        }
+      } catch (e) {
+        console.log(e);
       }
     };
   }, [socket, username]);
@@ -75,11 +86,11 @@ export default function Game() {
   // Join game handler
   const joinGame = () => {
     setIsConnecting(true);
-    socket.send(JSON.stringify({ username: username }));
+    socket.send(JSON.stringify({ username }));
   };
 
   const startGame = () => {
-    socket.send(JSON.stringify({ type: 'start_game ' }));
+    socket.send(JSON.stringify({ type: 'start_game' }));
   };
 
   return (

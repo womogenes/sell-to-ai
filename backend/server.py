@@ -72,17 +72,21 @@ async def websocket_endpoint(websocket: WebSocket, game_code: str):
     connection_manager = game_manager.get_connection_manager(game_code)
     convincing_game = game_manager.get_game(game_code)
     if not connection_manager:
-        await websocket.send_text(f"Game {game_code} not found")
+        await websocket.send_json({"error": f"Game {game_code} not found"})
+        await websocket.close()
+        return
+    if convincing_game.game_started:
+        await websocket.send_json({"error": f"Game {game_code} already started"})
         await websocket.close()
         return
     players_list = list(connection_manager.connections.values())
-    await websocket.send_text(json.dumps({"type": "connect", "players": players_list}))
+    await websocket.send_json({"type": "connect", "players": players_list})
     try:
         username_data = await websocket.receive_text()
         username_json = json.loads(username_data)
         username = username_json["username"]
     except (json.JSONDecodeError, KeyError):
-        await websocket.send_text("Invalid JSON format or missing 'username' key")
+        await websocket.send_json({"error": "Invalid JSON format or missing 'username' key"})
         await websocket.close()
         return
 

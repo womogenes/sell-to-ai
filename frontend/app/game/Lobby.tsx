@@ -44,7 +44,7 @@ export default function Lobby({
         />
 
         {/* Name input or profile display */}
-        <div className="h-20">
+        <div className="h-32 pt-2">
           {isConnected ? (
             <div className="flex flex-col items-center gap-4">
               <div className="flex items-center gap-2">
