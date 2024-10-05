@@ -72,7 +72,7 @@ async def websocket_endpoint(websocket: WebSocket, game_code: str):
         await websocket.close()
         return
     players_list = list(convincing_game.players)
-    await websocket.send_json({"type": "connect", "players": players_list, "game_started": convincing_game.game_started})
+    await websocket.send_json({"type": "connect", "state": convincing_game.serialize()}, ensure_ascii=False)
     try:
         username_data = await websocket.receive_text()
         username_json = json.loads(username_data)
@@ -85,7 +85,7 @@ async def websocket_endpoint(websocket: WebSocket, game_code: str):
     connection_manager.add_connection(websocket, username)
     convincing_game.add_player(username)
     players_list = list(connection_manager.connections.values())
-    await connection_manager.broadcast(json.dumps({"type": "join", "players": players_list}))
+    await connection_manager.broadcast(json.dumps({"type": "join", "players": players_list, "state": convincing_game.serialize()}))
 
     try:
         while True:
@@ -95,16 +95,20 @@ async def websocket_endpoint(websocket: WebSocket, game_code: str):
                 data = json.loads(data)
                 print("data:", data)
                 if data["type"] == "start_game":
-                    tasks = convincing_game.start_game()
-                    await connection_manager.broadcast(json.dumps({"type": "game_started", "tasks": tasks}))
+                    await connection_manager.broadcast(json.dumps({"type": "game_started", "state": convincing_game.serialize()}, ensure_ascii=False))
                 if data["type"] == "submit_pitch":
                     pitch = data["pitch"]
                     if convincing_game.submit_pitch(username, pitch) and len(convincing_game.pitches) == len(convincing_game.players):
                         await connection_manager.broadcast(json.dumps({"type": "pitches_done"}))
                         model_response = convincing_game.process_pitches()
-                        await connection_manager.broadcast(json.dumps({"type": "pitches_processed", "thoughts": model_response["thoughts"], "winner": model_response["winner"]}))
+                        await connection_manager.broadcast(json.dumps({"type": "pitches_processed",
+                                                                       "thoughts": model_response["thoughts"],
+                                                                       "winner": model_response["winner"],
+                                                                       "state": convincing_game.serialize()}, ensure_ascii=False))
                         reset = convincing_game.reset_game()
-                        await connection_manager.broadcast(json.dumps({"type": "new_round", "scores": reset["scores"]}))
+                        await connection_manager.broadcast(json.dumps({"type": "new_round",
+                                                                       "scores": reset["scores"],
+                                                                       "state": convincing_game.serialize()}, ensure_ascii=False))
 
             except json.JSONDecodeError:
                 await websocket.send_text("Error decoding JSON")

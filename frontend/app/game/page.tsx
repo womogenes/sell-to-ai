@@ -7,8 +7,9 @@ import { usePathname } from 'next/navigation';
 import Lobby from './Lobby';
 import PlayerList from './PlayerList';
 import { Loader2 } from 'lucide-react';
+import Game from './Game';
 
-export default function Game() {
+export default function GamePage() {
   const [gameCode, setGameCode] = useState<string | null>(null);
   const [username, setUsername] = useState<string>(
     localStorage.getItem('username') || '',
@@ -24,7 +25,7 @@ export default function Game() {
   const [isGameStarted, setIsGameStarted] = useState(false);
 
   // Important game-state variables
-  const [players, setPlayers] = useState<any>([]);
+  const [gameState, setGameState] = useState<any>(null);
   const [socket, setSocket] = useState<any>(null);
 
   // Create a game
@@ -66,19 +67,19 @@ export default function Game() {
         if (data.error) console.log('Error:', data.error);
 
         // Server always sends list of players
-        if (data.players) setPlayers(data.players ?? []);
+        if (data.state) setGameState(data.state);
 
         if (data.type === 'connect') {
           if (!username) localStorage.getItem('username');
-          if (username && !data.players.includes(username)) joinGame();
-          setIsGameStarted(data.game_started);
+          if (username && !data.state.players.includes(username)) joinGame();
+          setIsGameStarted(data.state.game_started);
         }
-        if (data.type === 'join' && data.players.includes(username)) {
+        if (data.type === 'join' && data.state.players.includes(username)) {
           setHasJoined(true);
           setIsJoining(false);
         }
         if (data.type === 'game_started') {
-          console.log('tasks:', data.tasks);
+          console.log('prompts:', data.state.prompts);
           setIsGameStarted(true);
         }
       } catch (e) {
@@ -101,9 +102,7 @@ export default function Game() {
   return (
     <div className="flex h-full">
       {isGameStarted ? (
-        <div className="flex w-full items-center justify-center">
-          The game has started.
-        </div>
+        <Game gameState={gameState} />
       ) : isConnected ? (
         <Lobby
           gameCode={gameCode}
@@ -122,7 +121,7 @@ export default function Game() {
 
       {/* List of players */}
       <PlayerList
-        players={players}
+        players={gameState?.players || []}
         username={username}
         isGameStarted={isGameStarted}
       />

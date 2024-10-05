@@ -14,7 +14,7 @@ export default function PlayerList({
       <h1 className="text-xl font-bold">
         Players{' '}
         <span className="font-normal text-neutral-400">
-          ({players.length}/10)
+          {!isGameStarted ? `(${players.length}/10)` : `(${players.length})`}
         </span>
       </h1>
 

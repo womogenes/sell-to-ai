@@ -95,7 +95,7 @@ class ConvincingGame:
         self.scenario = random.choice(SCENARIOS)
         return {'scores': self.scores}
 
-    def jsonify(self):
+    def serialize(self):
         return {
             'players': self.players,
             'prompts': self.prompts,
