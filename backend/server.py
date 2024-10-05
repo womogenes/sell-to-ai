@@ -68,8 +68,8 @@ async def websocket_endpoint(websocket: WebSocket, game_code: str):
         await websocket.send_text(f"Game {game_code} not found")
         await websocket.close()
         return
-    users_list = list(connection_manager.connections.values())
-    await websocket.send_text(json.dumps({"type": "connect", "users": users_list}))
+    players_list = list(connection_manager.connections.values())
+    await websocket.send_text(json.dumps({"type": "connect", "players": players_list}))
     try:
         username_data = await websocket.receive_text()
         username_json = json.loads(username_data)
@@ -80,14 +80,20 @@ async def websocket_endpoint(websocket: WebSocket, game_code: str):
         return
 
     connection_manager.add_connection(websocket, username)
-    users_list = list(connection_manager.connections.values())
-    await connection_manager.broadcast(json.dumps({"type": "join", "users": users_list}))
+    players_list = list(connection_manager.connections.values())
+    await connection_manager.broadcast(json.dumps({"type": "join", "players": players_list}))
 
     try:
         while True:
-            data = await websocket.receive_text()
-            print(f"Received from {username}: {data}")
-            await connection_manager.broadcast_user_message(websocket, data)
+            try:
+                data = await websocket.receive_text()
+                print(f"Received from {username}: {data}")
+                data = json.loads(data)
+            except json.JSONDecodeError:
+                await websocket.send_text("Error decoding JSON")
+                continue
+
+            #await connection_manager.broadcast_user_message(websocket, data)
     except WebSocketDisconnect:
         connection_manager.remove_connection(websocket)
         users_list = list(connection_manager.connections.values())
