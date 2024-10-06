@@ -21,11 +21,17 @@ with open("scenarios_with_answers.json", encoding="utf8") as f:
     SCENARIOS_WITH_ANSWERS = f.read()
 SCENARIOS_WITH_ANSWERS = json.loads(SCENARIOS_WITH_ANSWERS)
 
+with open("fruit_names.txt", encoding="utf8") as f:
+    AI_NAMES = f.read().strip().split("\n")
 class ConvincingGame:
     def __init__(self):
+        self.number_ai_players = 2
         self.players: List[str] = []
+        self.ai_players: List[str] = random.sample(AI_NAMES, self.number_ai_players)
         self.prompts: Dict[str, str] = {}
+        self.ai_prompts: Dict[str, str] = {}
         self.pitches: Dict[str, str] = {}
+        self.ai_pitches: Dict[str, str] = {}
         self.winner: str = None
         self.game_started: bool = False
         self.game_ended: bool = False
@@ -33,7 +39,9 @@ class ConvincingGame:
         self.scenario = scenario_with_answers["scenario"]
         self.items: List[str] = scenario_with_answers["nouns"]
         self.scores: Dict[str, List[int]] = {}
-        self.number_ai_players = 2
+        for a in self.ai_players:
+            self.scores[a] = 0
+        
 
     def get_items(self):
         return self.items
@@ -47,6 +55,9 @@ class ConvincingGame:
         random.shuffle(self.items)
         for i, player in enumerate(self.players):
             self.prompts[player] = f"{self.scenario} Convince Alice to buy: {self.items[i]}!"
+        for i, player in enumerate(self.ai_players):
+            self.ai_prompts[player] = f"{self.scenario} Convince Alice to buy: {self.items[i + len(self.players)]}!"
+            self.ai_pitches[player] = AIPlayer.get_response(self.ai_prompts[player])
         self.game_started = True
         return self.prompts
 
@@ -65,7 +76,10 @@ class ConvincingGame:
         return False
 
     def get_evaluation_prompt(self):
-        return "\n".join([f"Username: {self.players[i]}. {self.players[i]} suggests buying: {self.items[i]}. Reasoning: {self.pitches[self.players[i]]}" for i in range(len(self.players))])
+        return ("\n".join([f"Username: {self.players[i]}. {self.players[i]} suggests buying: {self.items[i]}. Reasoning: {self.pitches[self.players[i]]}" for i in range(len(self.players))]) 
+            + ("\n" if len(self.ai_players) > 0 else "") 
+            + "\n".join([f"Username: {self.ai_players[i]}. {self.ai_players[i]} suggests buying: {self.items[i + len(self.players)]}. Reasoning: {self.ai_pitches[self.ai_players[i]]}" for i in range(len(self.ai_players))])
+        )
 
     def process_pitches(self):
         # Call the OpenAI API to evaluate the pitches
@@ -89,7 +103,7 @@ class ConvincingGame:
             ]
         )
         self.winner = new_response.choices[0].message.content
-        for p in self.players:
+        for p in self.players + self.ai_players:
             if p == self.winner:
                 self.scores[p].append(1)
             else:
@@ -105,6 +119,7 @@ class ConvincingGame:
         scenario_with_answers = random.choice(SCENARIOS_WITH_ANSWERS)
         self.scenario = scenario_with_answers["scenario"]
         self.items: List[str] = scenario_with_answers["nouns"]
+        self.ai_pitches: Dict[str, str] = {}  # Reset AI pitches
         return {'scores': self.scores}
 
     def serialize(self):
@@ -116,17 +131,20 @@ class ConvincingGame:
             'winner': self.winner,
             'game_started': self.game_started,
             'scenario': self.scenario,
-            'scores': self.scores
+            'scores': self.scores,
+            'ai_players': self.ai_players,
+            'ai_pitches': self.ai_pitches,
+            'ai_prompts': self.ai_pitches
         }
 
 class AIPlayer:
-    def __init__(self):
-        self.system_prompt = "You're a player in a game where you have to pitch a product to Alice that she doesn't know she needs. Keep your responses short and very funny! Write at most 20 words, trying to avoid being stringent on grammar and complete sentences. you should be concise and witty, perhaps like a high schooler :D. avoid emojis though. the other respondents only have twenty seconds to write a quick response, and you shouldn't write more than them,,,"
-    def get_response(self, user_prompt):
+    system_prompt = "You're a player in a game where you have to pitch a product to Alice that she doesn't know she needs. Keep your responses short and very funny! Write at most 20 words, trying to avoid being stringent on grammar and complete sentences. you should be concise and witty, perhaps like a high schooler :D. avoid emojis though. the other respondents only have twenty seconds to write a quick response, and you shouldn't write more than them,,,"
+    @staticmethod
+    def get_response(user_prompt):
         response = client.chat.completions.create(
             model="gpt-4o-mini",
             messages=[
-                {"role": "system", "content": self.system_prompt},
+                {"role": "system", "content": AIPlayer.system_prompt},
                 {"role": "user", "content": user_prompt}
             ]
         )
