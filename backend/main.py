@@ -28,6 +28,7 @@ class ConvincingGame:
         self.pitches: Dict[str, str] = {}
         self.winner: str = None
         self.game_started: bool = False
+        self.game_ended: bool = False
         scenario_with_answers = random.choice(SCENARIOS_WITH_ANSWERS)
         self.scenario = scenario_with_answers["scenario"]
         self.items: List[str] = scenario_with_answers["nouns"]
@@ -63,10 +64,12 @@ class ConvincingGame:
         return False
 
     def get_evaluation_prompt(self):
-        return "\n".join([f"{self.players[i]} suggests buying: {self.items[i]}. Reasoning: {self.pitches[self.players[i]]}" for i in range(len(self.players))])
+        return "\n".join([f"{self.players[i]} suggests buying: {self.items[i]}. Reasoning: {self.pitches.get(self.players[i], '')}" for i in range(len(self.players))])
 
     def process_pitches(self):
         # Call the OpenAI API to evaluate the pitches
+        self.game_ended = True
+        print(self.get_evaluation_prompt())
         response = client.chat.completions.create(
             model="gpt-4o-mini",
             messages=[
@@ -97,6 +100,7 @@ class ConvincingGame:
         self.pitches: Dict[str, str] = {}
         self.winner: str = None
         self.game_started: bool = False
+        self.game_ended: bool = False
         scenario_with_answers = random.choice(SCENARIOS_WITH_ANSWERS)
         self.scenario = scenario_with_answers["scenario"]
         self.items: List[str] = scenario_with_answers["nouns"]
