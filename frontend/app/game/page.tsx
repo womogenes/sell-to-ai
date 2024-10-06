@@ -9,6 +9,7 @@ import PlayerList from './PlayerList';
 import { Loader2 } from 'lucide-react';
 import Game from './Game';
 import Results from './Results';
+import Helmet from 'react-helmet';
 
 export default function GamePage() {
   const [gameCode, setGameCode] = useState<string | null>(null);
@@ -107,41 +108,48 @@ export default function GamePage() {
   };
 
   return (
-    <div className="flex w-full grow flex-col gap-4 md:flex-row">
-      {isGameStarted ? (
-        gameState.round_ended[gameState.round_count] ? (
-          <Results gameState={gameState} />
-        ) : (
-          <Game
-            gameState={gameState}
+    <>
+      <Helmet>
+        {gameState && (
+          <title>{`Round ${gameState.round_count} - Sell to AI`}</title>
+        )}
+      </Helmet>
+      <div className="flex w-full grow flex-col gap-4 md:flex-row">
+        {isGameStarted ? (
+          gameState.round_ended[gameState.round_count] ? (
+            <Results gameState={gameState} startGame={startGame} />
+          ) : (
+            <Game
+              gameState={gameState}
+              username={username}
+              submitPitch={submitPitch}
+            />
+          )
+        ) : isConnected ? (
+          <Lobby
+            gameCode={gameCode}
             username={username}
-            submitPitch={submitPitch}
+            setUsername={setUsername}
+            isJoining={isJoining}
+            hasJoined={hasJoined}
+            startGame={startGame}
+            joinGame={joinGame}
           />
-        )
-      ) : isConnected ? (
-        <Lobby
-          gameCode={gameCode}
-          username={username}
-          setUsername={setUsername}
-          isJoining={isJoining}
-          hasJoined={hasJoined}
-          startGame={startGame}
-          joinGame={joinGame}
-        />
-      ) : (
-        <div className="flex w-full items-center justify-center">
-          <Loader2 className="mr-2 animate-spin" /> Connecting to server...
-        </div>
-      )}
+        ) : (
+          <div className="flex w-full items-center justify-center">
+            <Loader2 className="mr-2 animate-spin" /> Connecting to server...
+          </div>
+        )}
 
-      {/* List of players */}
-      <div className="my-auto flex shrink-0 flex-col gap-2 px-6 md:w-80 md:px-0">
-        <PlayerList
-          players={gameState?.players || []}
-          username={username}
-          isGameStarted={isGameStarted}
-        />
+        {/* List of players */}
+        <div className="my-auto flex shrink-0 flex-col gap-2 px-6 md:w-80 md:px-0">
+          <PlayerList
+            players={gameState?.players || []}
+            username={username}
+            isGameStarted={isGameStarted}
+          />
+        </div>
       </div>
-    </div>
+    </>
   );
 }
