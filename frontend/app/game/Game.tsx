@@ -43,7 +43,7 @@ export default function Game({
     console.log('endTime:', endTime, 'now:', new Date().getTime());
     const handle = window.setInterval(() => {
       const remainingTime = Math.max(
-        (endTime - new Date().getTime()) / 1000,
+        (endTime - new Date().getTime() - new Date().getTimezoneOffset() * 60000) / 1000,
         0,
       );
       if (remainingTime <= 0) {

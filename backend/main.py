@@ -130,6 +130,7 @@ class ConvincingGame:
         self.items: List[str] = scenario_with_answers["nouns"]
         self.expiry_time = datetime.fromtimestamp(0)
         self.ai_pitches: defaultdict[str, str] = defaultdict(lambda: "<no pitch>") # Reset AI pitches
+        self.game_started = False
         return {'scores': self.scores}
 
     def serialize(self):
