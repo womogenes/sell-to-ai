@@ -3,7 +3,6 @@ import { Textarea } from '@/components/ui/textarea';
 import { cn, typed } from '@/lib/utils';
 import { Check, Loader2 } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
-import Typed from 'typed.js';
 
 export default function Game({
   gameState,

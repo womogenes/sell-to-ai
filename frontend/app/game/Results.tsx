@@ -1,6 +1,26 @@
-import { useEffect } from 'react';
+import { typed } from '@/lib/utils';
+import { useEffect, useRef } from 'react';
 
 export default function Results({ gameState }: any) {
+  const scenarioEl = useRef(null);
+
+  useEffect(() => {
+    (async () => {
+      await typed(scenarioEl.current, gameState.scenario);
+      for (let name of gameState.players) {
+        await typed(document.querySelector(`#name-${name}`), name);
+        await typed(
+          document.querySelector(`#item-${name}`),
+          gameState.items[name],
+        );
+        await typed(
+          document.querySelector(`#pitch-${name}`),
+          gameState.pitches[name],
+        );
+      }
+    })();
+  });
+
   useEffect(() => {
     if (!gameState.round_ended[gameState.round_count]) return;
   }, [gameState]);
@@ -11,23 +31,22 @@ export default function Results({ gameState }: any) {
         <h1 className="mb-2 text-2xl font-bold">
           Round {gameState.round_count}
         </h1>
-        <p>{gameState.scenario}</p>
+        <p ref={scenarioEl}></p>
 
         {gameState.players.map((name: string) => {
           return (
             <div className="my-4" key={name}>
-              <p>{name}</p>
+              <p id={`name-${name}`}></p>
               <p className="">
                 <span className="text-neutral-400">item:</span>&nbsp;
-                <span className="font-bold text-yellow-600">
-                  {gameState.items[name]}
-                </span>
+                <span
+                  className="font-bold text-yellow-600"
+                  id={`item-${name}`}
+                ></span>
               </p>
               <p>
-                <span className="text-neutral-400">
-                  pitch: {!gameState.pitches[name] && '<no pitch given>'}
-                </span>
-                <span>{gameState.pitches[name]}</span>
+                <span className="text-neutral-400">pitch:</span>&nbsp;
+                <span id={`pitch-${name}`}></span>
               </p>
             </div>
           );
