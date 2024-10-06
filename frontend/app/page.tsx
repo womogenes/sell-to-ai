@@ -61,7 +61,7 @@ export default function Landing() {
                 <CarouselItem>
                   3. Players must convince the AI why it should buy the item
                 </CarouselItem>
-                <CarouselItem>4. AI chooses 2 players to buy from</CarouselItem>
+                <CarouselItem>4. AI chooses one player to buy from</CarouselItem>
               </CarouselContent>
               <CarouselPrevious />
               <CarouselNext />
