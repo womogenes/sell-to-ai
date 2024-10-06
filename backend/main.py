@@ -42,7 +42,6 @@ class ConvincingGame:
         self.scenario = scenario_with_answers["scenario"]
         self.items: List[str] = scenario_with_answers["nouns"]
         self.scores: Dict[str, List[int]] = {}
-        self.number_ai_players = 2
         self.expiry_time = datetime.fromtimestamp(0)
         for a in self.ai_players:
             self.scores[a] = 0
@@ -95,7 +94,7 @@ class ConvincingGame:
         response = client.chat.completions.create(
             model="gpt-4o-mini",
             messages=[
-                {"role": "system", "content": "You're Alice. You're playing a game with some other players. You're the judge of their responses. You love good humor and want the players to enjoy the game as much as possible, perhaps disregarding logic. Role-play a person who is going camping in Antarctica and needs supplies. Choose the answer suggested that you think would make the game most enjoyable, which should be the most surprising or funny one. Don't make your own twists on their suggestions when juding their suggestions. Reason before answering with the correct answer. It's not fun if you choose the most standard one."},
+                {"role": "system", "content": f"You're Alice. You're playing a game with some other players. You're the judge of their responses. You love good humor and want the players to enjoy the game as much as possible, perhaps disregarding logic. Role play a person in the following scenario: {self.scenario}\nChoose the answer suggested that you think would make the game most enjoyable, which should be the most surprising or funny one. Don't make your own twists on their suggestions when juding their suggestions. Reason before answering with the correct answer. It's not fun if you choose the most standard one. Keep in mind that the players are randomly assigned a word and can't pick their own word. judge based on the pitch, not based on the suggestion!"},
                 {"role": "user", "content": self.get_evaluation_prompt()}
             ]
         )
