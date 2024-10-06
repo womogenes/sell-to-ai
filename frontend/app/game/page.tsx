@@ -14,6 +14,7 @@ import Helmet from 'react-helmet';
 export default function GamePage() {
   const [gameCode, setGameCode] = useState<string | null>(null);
   const [username, setUsername] = useState<string>('');
+  const [showWinner, setShowWinner] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
   const params = useSearchParams();
@@ -117,7 +118,11 @@ export default function GamePage() {
       <div className="flex w-full grow flex-col gap-4 md:flex-row">
         {isGameStarted ? (
           gameState.round_ended[gameState.round_count] ? (
-            <Results gameState={gameState} startGame={startGame} />
+            <Results
+              gameState={gameState}
+              startGame={startGame}
+              setShowWinner={setShowWinner}
+            />
           ) : (
             <Game
               gameState={gameState}
@@ -148,6 +153,7 @@ export default function GamePage() {
             username={username}
             isGameStarted={isGameStarted}
             gameState={gameState}
+            showWinner={showWinner}
           />
         </div>
       </div>

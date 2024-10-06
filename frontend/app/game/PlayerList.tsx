@@ -6,11 +6,13 @@ export default function PlayerList({
   username,
   isGameStarted,
   gameState,
+  showWinner,
 }: {
   players: any[];
   username: string;
   isGameStarted: boolean;
   gameState: any;
+  showWinner: boolean;
 }) {
   return (
     <>
@@ -21,7 +23,7 @@ export default function PlayerList({
         </span>
       </h1>
 
-      <div className="flex w-full flex-col gap-y-2">
+      <div className="flex w-full flex-col gap-y-2 pb-10">
         {players.map((name: string) => {
           return (
             <div
@@ -43,7 +45,15 @@ export default function PlayerList({
               <div className="flex items-center gap-2">
                 {gameState.scores[name].map((score: number, i: number) => {
                   return (
-                    <div key={i}>
+                    <div
+                      className={cn(
+                        i + 1 < gameState.round_count || showWinner
+                          ? 'scale-100'
+                          : 'scale-0',
+                        'transition-transform duration-1000',
+                      )}
+                      key={i}
+                    >
                       {score === 0 && <X className="h-4 w-4" />}
                       {score === 1 && (
                         <DollarSign className="h-4 w-4 text-green-800" />

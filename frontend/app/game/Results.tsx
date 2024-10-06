@@ -3,9 +3,9 @@ import { cn, typed } from '@/lib/utils';
 import { Loader2 } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 
-export default function Results({ gameState, startGame }: any) {
+export default function Results({ gameState, startGame, setShowWinner }: any) {
   const scenarioEl = useRef(null);
-  const [ready, setReady] = useState(false);
+  const [readyNext, setReadyNext] = useState(false);
   const [hasClickedNext, setHasClickedNext] = useState(false);
 
   useEffect(() => {
@@ -49,9 +49,9 @@ export default function Results({ gameState, startGame }: any) {
         {},
         1000,
       );
-
       await new Promise((r) => setTimeout(r, 1000));
-      setReady(true);
+      setShowWinner(true);
+      setReadyNext(true);
     })();
   }, []);
 
@@ -60,7 +60,7 @@ export default function Results({ gameState, startGame }: any) {
   }, [gameState]);
 
   return (
-    <div className="mx-auto flex h-full w-full max-w-lg grow flex-col items-start justify-center p-6">
+    <div className="mx-auto flex w-full max-w-lg flex-col items-start justify-center p-6 md:h-full md:grow">
       <div className="min-h-96">
         <h1 className="mb-2 text-2xl font-bold">
           Round {gameState.round_count}
@@ -116,7 +116,7 @@ export default function Results({ gameState, startGame }: any) {
       <Button
         className={cn(
           'mt-4 transition-all',
-          ready ? 'opacity-100' : 'opacity-0',
+          readyNext ? 'opacity-100' : 'opacity-0',
         )}
         onClick={() => {
           setHasClickedNext(true);
