@@ -107,7 +107,7 @@ export default function GamePage() {
   };
 
   return (
-    <div className="flex h-full grow flex-col gap-4 md:flex-row">
+    <div className="flex w-full grow flex-col gap-4 md:flex-row">
       {isGameStarted ? (
         gameState.round_ended[gameState.round_count] ? (
           <Results gameState={gameState} />

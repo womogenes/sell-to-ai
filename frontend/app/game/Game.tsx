@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { cn } from '@/lib/utils';
+import { cn, typed } from '@/lib/utils';
 import { Check, Loader2 } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import Typed from 'typed.js';
@@ -22,27 +22,18 @@ export default function Game({
   const charLimit = 140;
 
   useEffect(() => {
-    if (!gameState) return;
+    (async () => {
+      if (!gameState) return;
 
-    new Typed(scenarioEl.current, {
-      strings: [gameState.scenario],
-      showCursor: false,
-      onComplete: () => {
-        new Typed(convinceEl.current, {
-          strings: [`Convince Alice to buy:`],
-          showCursor: false,
-          onComplete: async () => {
-            await new Promise((r) => setTimeout(r, 500));
-            new Typed(itemEl.current, {
-              strings: [gameState.items[username]],
-              showCursor: false,
-              typeSpeed: 200,
-              onComplete: () => setIsAnimationFinished(true),
-            });
-          },
-        });
-      },
-    });
+      await typed(scenarioEl.current, gameState.scenario);
+      await typed(convinceEl.current, 'Convince Alice to buy:');
+      await typed(
+        itemEl.current,
+        gameState.items[username],
+        { typeSpeed: 200 },
+        500,
+      );
+    })();
   }, [gameState]);
 
   useEffect(() => {

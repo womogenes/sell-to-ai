@@ -6,7 +6,7 @@ export default function Results({ gameState }: any) {
   }, [gameState]);
 
   return (
-    <div className="flex h-full w-full flex-col justify-center p-6">
+    <div className="mx-auto flex h-full w-full max-w-lg grow flex-col justify-center p-6">
       <div className="min-h-96">
         <h1 className="mb-2 text-2xl font-bold">
           Round {gameState.round_count}
@@ -15,21 +15,33 @@ export default function Results({ gameState }: any) {
 
         {gameState.players.map((name: string) => {
           return (
-            <div className="my-8">
+            <div className="my-4" key={name}>
               <p>{name}</p>
               <p className="">
                 <span className="text-neutral-400">item:</span>&nbsp;
-                <span className="font-black text-yellow-600">
+                <span className="font-bold text-yellow-600">
                   {gameState.items[name]}
                 </span>
               </p>
               <p>
-                <span className="text-neutral-400">pitch:</span>&nbsp;
+                <span className="text-neutral-400">
+                  pitch: {!gameState.pitches[name] && '<no pitch given>'}
+                </span>
                 <span>{gameState.pitches[name]}</span>
               </p>
             </div>
           );
         })}
+
+        <p className="mb-4">
+          <span className="text-neutral-400">Alice's thoughts:</span>&nbsp;
+          {gameState.thoughts}
+        </p>
+
+        <p>
+          <span className="text-neutral-400">winner:</span>&nbsp;
+          <span className="font-bold text-yellow-600">{gameState.winner}</span>
+        </p>
       </div>
     </div>
   );

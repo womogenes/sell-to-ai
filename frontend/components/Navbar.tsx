@@ -15,7 +15,7 @@ export default function Navbar() {
         href="https://github.com/womogenes/sell-to-ai"
         target="_blank"
       >
-        <GitHubLogoIcon />
+        <GitHubLogoIcon className="h-4 w-4" />
       </Link>
     </div>
   );
