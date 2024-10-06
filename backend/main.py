@@ -33,6 +33,7 @@ class ConvincingGame:
         self.scenario = scenario_with_answers["scenario"]
         self.items: List[str] = scenario_with_answers["nouns"]
         self.scores: Dict[str, List[int]] = {}
+        self.number_ai_players = 2
 
     def get_items(self):
         return self.items
@@ -40,7 +41,7 @@ class ConvincingGame:
     def start_game(self):
         if self.game_started:
             return self.pitches
-        if len(self.players) > len(self.items):
+        if len(self.players) + self.number_ai_players > len(self.items):
             return "Not enough items for all players."
         
         random.shuffle(self.items)
@@ -64,7 +65,7 @@ class ConvincingGame:
         return False
 
     def get_evaluation_prompt(self):
-        return "\n".join([f"{self.players[i]} suggests buying: {self.items[i]}. Reasoning: {self.pitches.get(self.players[i], '')}" for i in range(len(self.players))])
+        return "\n".join([f"Username: {self.players[i]}. {self.players[i]} suggests buying: {self.items[i]}. Reasoning: {self.pitches[self.players[i]]}" for i in range(len(self.players))])
 
     def process_pitches(self):
         # Call the OpenAI API to evaluate the pitches
@@ -117,6 +118,19 @@ class ConvincingGame:
             'scenario': self.scenario,
             'scores': self.scores
         }
+
+class AIPlayer:
+    def __init__(self):
+        self.system_prompt = "You're a player in a game where you have to pitch a product to Alice that she doesn't know she needs. Keep your responses short and very funny! Write at most 20 words, trying to avoid being stringent on grammar and complete sentences. you should be concise and witty, perhaps like a high schooler :D. avoid emojis though. the other respondents only have twenty seconds to write a quick response, and you shouldn't write more than them,,,"
+    def get_response(self, user_prompt):
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {"role": "system", "content": self.system_prompt},
+                {"role": "user", "content": user_prompt}
+            ]
+        )
+        return response.choices[0].message.content
 
 if __name__ == "__main__":
     g = ConvincingGame()
