@@ -7,6 +7,7 @@ import json
 from datetime import datetime, timedelta
 from constants import TURN_TIME
 from collections import defaultdict
+import datetime as dt
 
 load_dotenv()
 api_key = os.getenv("OPENAI_API_KEY")
@@ -65,7 +66,7 @@ class ConvincingGame:
             self.ai_pitches[player] = AIPlayer.get_response(self.ai_prompts[player])
         self.game_started = True
         self.round_ended[self.round_count] = False
-        self.expiry_time = datetime.utcnow() + timedelta(seconds=TURN_TIME)  # Give some grace time
+        self.expiry_time = datetime.now(dt.timezone.utc) + timedelta(seconds=TURN_TIME)  # Give some grace time
         return self.prompts
 
     def add_player(self, player: str):
