@@ -90,35 +90,30 @@ async def websocket_endpoint(websocket: WebSocket, game_code: str):
 
     try:
         while True:
+            async def end_game():
+                if convincing_game.game_ended:
+                    return
+                await connection_manager.broadcast(json.dumps({"type": "pitches_done"}))
+                model_response = convincing_game.process_pitches()
+                await connection_manager.broadcast(json.dumps({"type": "pitches_processed",
+                                                                "thoughts": model_response["thoughts"],
+                                                                "winner": model_response["winner"],
+                                                                "state": convincing_game.serialize()}))
+                
+            async def schedule_end_game():
+                await asyncio.sleep(TURN_TIME)
+                await end_game()
+            
             try:
                 data = await websocket.receive_text()
                 print(f"Received from {username}: {data}")
                 data = json.loads(data)
                 if data["type"] == "start_game":
+                    reset = convincing_game.reset_game()
                     convincing_game.start_game()
-                    await connection_manager.broadcast(json.dumps({
-                        "type": "game_started",
-                        "state": convincing_game.serialize(),
-                    }))
-                    
-                    async def end_game():
-                        await connection_manager.broadcast(json.dumps({"type": "pitches_done"}))
-                        model_response = convincing_game.process_pitches()
-                        await connection_manager.broadcast(json.dumps({"type": "pitches_processed",
-                                                                        "thoughts": model_response["thoughts"],
-                                                                        "winner": model_response["winner"],
-                                                                        "state": convincing_game.serialize()}))
-                        reset = convincing_game.reset_game()
-                        await connection_manager.broadcast(json.dumps({"type": "new_round",
-                                                                        "scores": reset["scores"],
-                                                                        "state": convincing_game.serialize()}))
-                        
-                    async def schedule_end_game():
-                        round = convincing_game.round_count
-                        await asyncio.sleep(TURN_TIME)
-                        if convincing_game.round_ended[round]:
-                            return
-                        await end_game()
+                    await connection_manager.broadcast(json.dumps({"type": "new_round",
+                                                                   "scores": reset["scores"],
+                                                                   "state": convincing_game.serialize()}))
 
                     asyncio.create_task(schedule_end_game())
                                         

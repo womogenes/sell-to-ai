@@ -78,7 +78,7 @@ export default function GamePage() {
           setHasJoined(true);
           setIsJoining(false);
         }
-        if (data.type === 'game_started') {
+        if (data.type === 'new_round') {
           console.log('prompts:', data.state.prompts);
           setIsGameStarted(true);
         }

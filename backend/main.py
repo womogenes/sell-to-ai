@@ -91,7 +91,7 @@ class ConvincingGame:
 
     def process_pitches(self):
         # Call the OpenAI API to evaluate the pitches
-        # self.game_ended = True
+        self.game_ended = True
         self.round_ended[self.round_count] = True
         print(self.get_evaluation_prompt())
         response = client.chat.completions.create(
@@ -124,6 +124,7 @@ class ConvincingGame:
         self.pitches: Dict[str, str] = defaultdict(str)
         self.winner: str = None
         self.game_started: bool = False
+        self.game_ended: bool = False
         self.round_count += 1
         scenario_with_answers = random.choice(SCENARIOS_WITH_ANSWERS)
         self.scenario = scenario_with_answers["scenario"]
@@ -133,19 +134,20 @@ class ConvincingGame:
         return {'scores': self.scores}
 
     def serialize(self):
+        combined_players = self.players + self.ai_players
+        combined_prompts = {**self.prompts, **self.ai_prompts}
+        combined_pitches = {**self.pitches, **self.ai_pitches}
+        
         return {
-            'players': self.players,
-            'prompts': self.prompts,
-            'items': {player: self.items[i] for i, player in enumerate(self.players)},
-            'pitches': dict(self.pitches),
+            'players': combined_players,
+            'prompts': combined_prompts,
+            'items': {player: self.items[i] for i, player in enumerate(combined_players)},
+            'pitches': combined_pitches,
             'winner': self.winner,
             'game_started': self.game_started,
             'scenario': self.scenario,
             'scores': self.scores,
             'expiry_time': self.expiry_time.isoformat(),
-            'ai_players': self.ai_players,
-            'ai_pitches': self.ai_pitches,
-            'ai_prompts': self.ai_pitches,
         }
 
 class AIPlayer:
