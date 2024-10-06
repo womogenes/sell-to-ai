@@ -40,6 +40,7 @@ export default function Game({
 
     // Start the countdown
     const endTime = gameState.expiry_time;
+    console.log('endTime:', endTime, 'now:', new Date().getTime());
     const handle = window.setInterval(() => {
       const remainingTime = Math.max(
         (endTime - new Date().getTime()) / 1000,
@@ -49,7 +50,6 @@ export default function Game({
         window.clearInterval(handle);
 
         // Submit
-        console.log('submitting pitch...');
         if (!isSubmittingPitch && !hasSubmittedPitch) {
           console.log(
             'isSubmittingPitch:',
