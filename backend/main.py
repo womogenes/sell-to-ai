@@ -45,7 +45,7 @@ class ConvincingGame:
         self.number_ai_players = 2
         self.expiry_time = datetime.fromtimestamp(0)
         for a in self.ai_players:
-            self.scores[a] = 0
+            self.scores[a] = []
         
 
     def get_items(self):
