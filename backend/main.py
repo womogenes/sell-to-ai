@@ -4,6 +4,9 @@ from dotenv import load_dotenv
 import os
 from openai import OpenAI
 import json
+from datetime import datetime, timedelta
+from constants import TURN_TIME
+from collections import defaultdict
 
 load_dotenv()
 api_key = os.getenv("OPENAI_API_KEY")
@@ -25,7 +28,7 @@ class ConvincingGame:
     def __init__(self):
         self.players: List[str] = []
         self.prompts: Dict[str, str] = {}
-        self.pitches: Dict[str, str] = {}
+        self.pitches: defaultdict[str, str] = defaultdict(str)
         self.winner: str = None
         self.game_started: bool = False
         self.game_ended: bool = False
@@ -34,6 +37,7 @@ class ConvincingGame:
         self.items: List[str] = scenario_with_answers["nouns"]
         self.scores: Dict[str, List[int]] = {}
         self.number_ai_players = 2
+        self.expiry_time = datetime.fromtimestamp(0)
 
     def get_items(self):
         return self.items
@@ -48,6 +52,8 @@ class ConvincingGame:
         for i, player in enumerate(self.players):
             self.prompts[player] = f"{self.scenario} Convince Alice to buy: {self.items[i]}!"
         self.game_started = True
+        self.expiry_time = datetime.utcnow() + timedelta(seconds=TURN_TIME)
+        print("set self.expiry_time to", self.expiry_time)
         return self.prompts
 
     def add_player(self, player: str):
@@ -65,7 +71,7 @@ class ConvincingGame:
         return False
 
     def get_evaluation_prompt(self):
-        return "\n".join([f"Username: {self.players[i]}. {self.players[i]} suggests buying: {self.items[i]}. Reasoning: {self.pitches[self.players[i]]}" for i in range(len(self.players))])
+        return "\n".join([f"Username: {self.players[i]} suggests buying: {self.items[i]}. Reasoning: {self.pitches[self.players[i]]}" for i in range(len(self.players))])
 
     def process_pitches(self):
         # Call the OpenAI API to evaluate the pitches
@@ -98,13 +104,14 @@ class ConvincingGame:
 
     def reset_game(self):
         self.prompts: Dict[str, str] = {}
-        self.pitches: Dict[str, str] = {}
+        self.pitches: Dict[str, str] = defaultdict(str)
         self.winner: str = None
         self.game_started: bool = False
         self.game_ended: bool = False
         scenario_with_answers = random.choice(SCENARIOS_WITH_ANSWERS)
         self.scenario = scenario_with_answers["scenario"]
         self.items: List[str] = scenario_with_answers["nouns"]
+        self.expiry_time = datetime.fromtimestamp(0)
         return {'scores': self.scores}
 
     def serialize(self):
@@ -112,11 +119,12 @@ class ConvincingGame:
             'players': self.players,
             'prompts': self.prompts,
             'items': {player: self.items[i] for i, player in enumerate(self.players)},
-            'pitches': self.pitches,
+            'pitches': dict(self.pitches),
             'winner': self.winner,
             'game_started': self.game_started,
             'scenario': self.scenario,
-            'scores': self.scores
+            'scores': self.scores,
+            'expiry_time': self.expiry_time.isoformat()
         }
 
 class AIPlayer:

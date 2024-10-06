@@ -2,6 +2,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
 import { Loader2 } from 'lucide-react';
+import { useState } from 'react';
 
 export default function Lobby({
   gameCode,
@@ -20,6 +21,8 @@ export default function Lobby({
   startGame: any;
   joinGame: any;
 }) {
+  const [hasStartedGame, setHasStartedGame] = useState<boolean>(false);
+
   return (
     <>
       {/* Main body */}
@@ -56,7 +59,15 @@ export default function Lobby({
                 <p>{username}</p>
               </div>
 
-              <Button onClick={startGame}>Start game</Button>
+              <Button
+                onClick={() => {
+                  setHasStartedGame(true);
+                  startGame();
+                }}
+              >
+                Start game{' '}
+                {hasStartedGame && <Loader2 className="ml-2 h-6 w-6" />}
+              </Button>
             </div>
           ) : (
             <div className="relative flex flex-col items-center gap-4">
@@ -87,13 +98,13 @@ export default function Lobby({
                 disabled={username === '' || isJoining}
                 onClick={joinGame}
               >
+                Join game
                 <Loader2
                   className={cn(
-                    'mr-2 h-4 w-4',
+                    'ml-2 h-4 w-4',
                     isJoining ? 'block animate-spin' : 'hidden',
                   )}
-                />{' '}
-                Join game
+                />
               </Button>
             </div>
           )}

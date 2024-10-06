@@ -18,10 +18,15 @@ export default function Game({
   const [hasSubmittedPitch, setHasSubmittedPitch] = useState<boolean>(false);
 
   const [playerPitch, setPlayerPitch] = useState<string>('');
-  const [timer, setTimer] = useState<number>(60);
+  const [timer, setTimer] = useState<number>(20);
+  const [endTime, setEndTime] = useState<number>(0);
   const charLimit = 140;
 
   useEffect(() => {
+    if (!gameState) return;
+    console.log(gameState.expiry_time);
+    setEndTime(new Date(gameState.expiry_time).getTime());
+
     new Typed(scenarioEl.current, {
       strings: [gameState.scenario],
       showCursor: false,
@@ -41,20 +46,21 @@ export default function Game({
         });
       },
     });
-  }, []);
+  }, [gameState]);
 
   useEffect(() => {
     if (!isAnimationFinished) return;
 
     // Start the countdown
-    const startTime = Date.now();
     const handle = window.setInterval(() => {
-      const timer = 60 - (Date.now() - startTime) / 1000;
+      console.log(endTime - new Date().getTime());
+      const timer = endTime - new Date().getTime();
       if (timer < 0) {
         window.clearInterval(handle);
 
         // Submit
-        submitPitch();
+        console.log('submitting pitch...');
+        if (!isSubmittingPitch && !hasSubmittedPitch) submitPitch();
       }
       setTimer(timer);
     });
