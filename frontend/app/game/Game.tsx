@@ -39,7 +39,7 @@ export default function Game({
     if (!isAnimationFinished) return;
 
     // Start the countdown
-    const endTime = new Date(gameState.expiry_time).getTime();
+    const endTime = gameState.expiry_time;
     const handle = window.setInterval(() => {
       const remainingTime = Math.max(
         (endTime - new Date().getTime()) / 1000,
