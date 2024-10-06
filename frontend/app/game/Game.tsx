@@ -19,13 +19,10 @@ export default function Game({
 
   const [playerPitch, setPlayerPitch] = useState<string>('');
   const [timer, setTimer] = useState<number>(20);
-  const [endTime, setEndTime] = useState<number>(0);
   const charLimit = 140;
 
   useEffect(() => {
     if (!gameState) return;
-    console.log(gameState.expiry_time);
-    setEndTime(new Date(gameState.expiry_time).getTime());
 
     new Typed(scenarioEl.current, {
       strings: [gameState.scenario],
@@ -52,9 +49,9 @@ export default function Game({
     if (!isAnimationFinished) return;
 
     // Start the countdown
+    const endTime = new Date(gameState.expiry_time).getTime();
     const handle = window.setInterval(() => {
-      console.log(endTime - new Date().getTime());
-      const timer = endTime - new Date().getTime();
+      const timer = (endTime - new Date().getTime()) / 1000;
       if (timer < 0) {
         window.clearInterval(handle);
 
