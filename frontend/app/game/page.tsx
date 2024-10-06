@@ -48,7 +48,7 @@ export default function GamePage() {
     // return () => socket?.close();
   }, []);
 
-  // On socket change
+  // Socket binding methods
   useEffect(() => {
     if (!socket) return;
 
@@ -95,14 +95,24 @@ export default function GamePage() {
     localStorage.setItem('username', username);
   };
 
+  // Start game handler
   const startGame = () => {
     socket.send(JSON.stringify({ type: 'start_game' }));
+  };
+
+  // Submit pitch handler
+  const submitPitch = (pitch: string) => {
+    socket.send(JSON.stringify({ type: 'submit_pitch', pitch: pitch }));
   };
 
   return (
     <div className="flex h-full flex-col gap-4 md:flex-row">
       {isGameStarted ? (
-        <Game gameState={gameState} username={username} />
+        <Game
+          gameState={gameState}
+          username={username}
+          submitPitch={submitPitch}
+        />
       ) : isConnected ? (
         <Lobby
           gameCode={gameCode}
