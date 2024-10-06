@@ -93,8 +93,8 @@ async def websocket_endpoint(websocket: WebSocket, game_code: str):
                 data = await websocket.receive_text()
                 print(f"Received from {username}: {data}")
                 data = json.loads(data)
-                print("data:", data)
                 if data["type"] == "start_game":
+                    convincing_game.start_game()
                     await connection_manager.broadcast(json.dumps({"type": "game_started", "state": convincing_game.serialize()}))
                 if data["type"] == "submit_pitch":
                     pitch = data["pitch"]

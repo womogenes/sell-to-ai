@@ -11,9 +11,7 @@ import Game from './Game';
 
 export default function GamePage() {
   const [gameCode, setGameCode] = useState<string | null>(null);
-  const [username, setUsername] = useState<string>(
-    localStorage.getItem('username') || '',
-  );
+  const [username, setUsername] = useState<string>('');
   const router = useRouter();
   const pathname = usePathname();
   const params = useSearchParams();
@@ -30,6 +28,8 @@ export default function GamePage() {
 
   // Create a game
   useEffect(() => {
+    setUsername(localStorage.getItem('username') || '');
+
     (async () => {
       let gameCode = params.get('g');
       if (gameCode) {
@@ -55,7 +55,7 @@ export default function GamePage() {
     socket.onopen = () => {
       console.log('Connected to websocket server');
       if (username) joinGame();
-      setTimeout(() => setIsConnected(true), 500);
+      setIsConnected(true);
     };
     socket.onmessage = (e: { data: string }) => {
       try {
@@ -100,9 +100,9 @@ export default function GamePage() {
   };
 
   return (
-    <div className="flex h-full">
+    <div className="flex h-full flex-col gap-4 md:flex-row">
       {isGameStarted ? (
-        <Game gameState={gameState} />
+        <Game gameState={gameState} username={username} />
       ) : isConnected ? (
         <Lobby
           gameCode={gameCode}

@@ -10,7 +10,7 @@ export default function PlayerList({
   isGameStarted: boolean;
 }) {
   return (
-    <div className="my-auto flex flex-col gap-2">
+    <div className="my-auto flex shrink-0 flex-col gap-2 px-6 md:w-80 md:px-0">
       <h1 className="text-xl font-bold">
         Players{' '}
         <span className="font-normal text-neutral-400">
@@ -18,13 +18,13 @@ export default function PlayerList({
         </span>
       </h1>
 
-      <div className="flex w-80 flex-col gap-y-2">
+      <div className="flex w-full flex-col gap-y-2">
         {players.map((name: string) => {
           return (
             <div
               className={cn(
-                username === name ? 'bg-orange-200' : 'bg-neutral-100',
-                'flex items-center gap-0 rounded-l-full',
+                username === name ? 'bg-orange-100' : 'bg-neutral-100',
+                'flex items-center gap-0 rounded-full md:rounded-r-none',
               )}
               key={name}
             >
@@ -41,8 +41,8 @@ export default function PlayerList({
           return (
             <div
               className={cn(
-                'flex rounded-l-full bg-neutral-100 px-11 py-2 text-neutral-400',
-                isGameStarted ? 'invisible' : 'visible',
+                'flex rounded-full bg-neutral-100 px-11 py-2 text-neutral-400 md:rounded-r-none',
+                isGameStarted ? 'hidden md:invisible md:block' : 'visible',
               )}
               key={i}
             >
