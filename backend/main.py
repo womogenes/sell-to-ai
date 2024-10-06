@@ -43,7 +43,7 @@ class ConvincingGame:
         self.scenario = scenario_with_answers["scenario"]
         self.items: List[str] = scenario_with_answers["nouns"]
         self.scores: Dict[str, List[int]] = {}
-        self.expiry_time = datetime.fromtimestamp(0)
+        self.expiry_time = datetime.fromtimestamp(1e5)
         self.thoughts = ""
         for a in self.ai_players:
             self.scores[a] = []
@@ -128,7 +128,7 @@ class ConvincingGame:
         scenario_with_answers = random.choice(SCENARIOS_WITH_ANSWERS)
         self.scenario = scenario_with_answers["scenario"]
         self.items: List[str] = scenario_with_answers["nouns"]
-        self.expiry_time = datetime.fromtimestamp(0)
+        self.expiry_time = datetime.fromtimestamp(1e5)
         self.ai_pitches: defaultdict[str, str] = defaultdict(lambda: "<no pitch>") # Reset AI pitches
         self.game_started = False
         return {'scores': self.scores}
