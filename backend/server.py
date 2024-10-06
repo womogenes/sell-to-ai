@@ -1,11 +1,14 @@
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
-from typing import Dict, Tuple
-import uuid
+from typing import Dict
 import json
 from main import ConvincingGame
 from collections import namedtuple
 from fastapi.middleware.cors import CORSMiddleware
 import random
+from datetime import datetime, timedelta
+import asyncio
+
+TURN_TIME = 15
 
 app = FastAPI()
 
@@ -95,20 +98,39 @@ async def websocket_endpoint(websocket: WebSocket, game_code: str):
                 data = json.loads(data)
                 print("data:", data)
                 if data["type"] == "start_game":
-                    await connection_manager.broadcast(json.dumps({"type": "game_started", "state": convincing_game.serialize()}))
+                    current_time = datetime.utcnow()
+                    expiry_time = current_time + timedelta(seconds=TURN_TIME)
+                    await connection_manager.broadcast(json.dumps({
+                        "type": "game_started",
+                        "state": convincing_game.serialize(),
+                        "expiry": expiry_time.isoformat()
+                    }))
+            
+                    
+                async def end_game():
+                    if convincing_game.game_ended:
+                        return
+                    await connection_manager.broadcast(json.dumps({"type": "pitches_done"}))
+                    model_response = convincing_game.process_pitches()
+                    await connection_manager.broadcast(json.dumps({"type": "pitches_processed",
+                                                                    "thoughts": model_response["thoughts"],
+                                                                    "winner": model_response["winner"],
+                                                                    "state": convincing_game.serialize()}))
+                    reset = convincing_game.reset_game()
+                    await connection_manager.broadcast(json.dumps({"type": "new_round",
+                                                                    "scores": reset["scores"],
+                                                                    "state": convincing_game.serialize()}))
+                    
+                async def schedule_end_game():
+                    await asyncio.sleep(TURN_TIME)
+                    await end_game()
+
+                asyncio.create_task(schedule_end_game())
+                                        
                 if data["type"] == "submit_pitch":
                     pitch = data["pitch"]
                     if convincing_game.submit_pitch(username, pitch) and len(convincing_game.pitches) == len(convincing_game.players):
-                        await connection_manager.broadcast(json.dumps({"type": "pitches_done"}))
-                        model_response = convincing_game.process_pitches()
-                        await connection_manager.broadcast(json.dumps({"type": "pitches_processed",
-                                                                       "thoughts": model_response["thoughts"],
-                                                                       "winner": model_response["winner"],
-                                                                       "state": convincing_game.serialize()}))
-                        reset = convincing_game.reset_game()
-                        await connection_manager.broadcast(json.dumps({"type": "new_round",
-                                                                       "scores": reset["scores"],
-                                                                       "state": convincing_game.serialize()}))
+                        await end_game()
 
             except json.JSONDecodeError:
                 await websocket.send_text("Error decoding JSON")
