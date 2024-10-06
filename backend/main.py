@@ -32,9 +32,9 @@ class ConvincingGame:
         self.players: List[str] = []
         self.ai_players: List[str] = random.sample(AI_NAMES, self.number_ai_players)
         self.prompts: Dict[str, str] = {}
-        self.pitches: defaultdict[str, str] = defaultdict(str)
+        self.pitches: defaultdict[str, str] = defaultdict(lambda: "<no pitch>")
         self.ai_prompts: Dict[str, str] = {}
-        self.ai_pitches: Dict[str, str] = {}
+        self.ai_pitches: defaultdict[str, str] = defaultdict(lambda: "<no pitch>")
         self.winner: str = None
         self.game_started: bool = False
         self.round_count: int = 0
@@ -66,6 +66,7 @@ class ConvincingGame:
         self.game_started = True
         self.round_ended[self.round_count] = False
         self.expiry_time = datetime.now() + timedelta(seconds=TURN_TIME)  # Give some grace time
+        print("start_game, expiry time:", self.expiry_time)
         return self.prompts
 
     def add_player(self, player: str):
@@ -92,12 +93,11 @@ class ConvincingGame:
     def process_pitches(self):
         # Call the OpenAI API to evaluate the pitches
         self.round_ended[self.round_count] = True
-        print(self.get_evaluation_prompt())
         response = client.chat.completions.create(
             model="gpt-4o",
             temperature=0.9,
             messages=[
-                {"role": "system", "content": f"you're alice. you're playing a game with some other players & you're the judge of their responses. you love good humor and want the other guys to enjoy the game as much as possible, obviously disregarding logic. role-play a person in the following scenario: {self.scenario}\nchoose the user who made the pitch that you think would make the game most enjoyable, which should be the funniest & cleverest. don't make your own twists on their suggestions when judging their suggestions. only reveal your final answer at the end of your instagram-like response. it's not fun if you choose the most standard one. keep in mind that the players are randomly assigned a word and can't pick their own word. judge based on the pitch, not based on the suggestion! it's the pitch that matters :D\nexample:\nUsername: dragon. dragon suggests buying: cash. Reasoning: the more cash you buy, the more you have for your road trip. road trips are expensive ok?\nUsername: mangosteen. mangosteen suggests buying: mention. Reasoning: dude, you need a car trash can. no one wants a smelly road trip\n\nresponse:\ndragon: super logical. i've never thought about it that way! heading to the grocery store rn\nmangosteen: i think you sold the wrong item bro. you were supposed to sell mentions, not trash cans"},
+                {"role": "system", "content": f"you're alice. you're playing a game with some other players & you're the judge of their responses. you love good humor and want the other guys to enjoy the game as much as possible, obviously disregarding logic. role-play a person in the following scenario: {self.scenario}\nchoose the user who made the pitch that you think would make the game most enjoyable, which should be the funniest & cleverest. don't make your own twists on their suggestions when judging their suggestions. only reveal your final answer at the end of your instagram-like response. it's not fun if you choose the most standard one. keep in mind that the players are randomly assigned a word and can't pick their own word. judge based on the pitch, not based on the suggestion! it's the pitch that matters :D\nexample:\nUsername: dragon. dragon suggests buying: cash. Reasoning: the more cash you buy, the more you have for your road trip. road trips are expensive ok?\nUsername: mangosteen. mangosteen suggests buying: mention. Reasoning: dude, you need a car trash can. no one wants a smelly road trip\n\nresponse:\n\ndragon: super logical. i've never thought about it that way! heading to the grocery store rn\n\nmangosteen: i think you sold the wrong item bro. you were supposed to sell mentions, not trash cans"},
                 {"role": "user", "content": self.get_evaluation_prompt()}
             ]
         )
@@ -123,14 +123,14 @@ class ConvincingGame:
 
     def reset_game(self):
         self.prompts: Dict[str, str] = {}
-        self.pitches: Dict[str, str] = defaultdict(str)
+        self.pitches: Dict[str, str] = defaultdict(lambda: "<no pitch>")
         self.winner: str = None
         self.round_count += 1
         scenario_with_answers = random.choice(SCENARIOS_WITH_ANSWERS)
         self.scenario = scenario_with_answers["scenario"]
         self.items: List[str] = scenario_with_answers["nouns"]
         self.expiry_time = datetime.fromtimestamp(0)
-        self.ai_pitches: Dict[str, str] = {}  # Reset AI pitches
+        self.ai_pitches: defaultdict[str, str] = defaultdict(lambda: "<no pitch>") # Reset AI pitches
         return {'scores': self.scores}
 
     def serialize(self):
@@ -139,11 +139,7 @@ class ConvincingGame:
         combined_pitches = {**self.pitches, **self.ai_pitches}
         for name in combined_players:
             if name not in combined_pitches or combined_pitches[name].strip() == "":
-                combined_pitches[name] = "<no pitch>"
-
-        from pprint import pprint
-        pprint(combined_pitches)
-        
+                combined_pitches[name] = "<no pitch>"        
         return {
             'players': combined_players,
             'prompts': combined_prompts,

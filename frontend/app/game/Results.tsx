@@ -27,7 +27,7 @@ export default function Results({ gameState, startGame }: any) {
         await typed(
           document.querySelector(`#pitch-${name}`),
           gameState.pitches[name],
-          {},
+          { contentType: 'null' },
           500,
         );
       }
@@ -88,7 +88,14 @@ export default function Results({ gameState, startGame }: any) {
               </p>
               <p>
                 <span className="text-neutral-400">pitch:</span>&nbsp;
-                <span id={`pitch-${name}`}></span>
+                <span
+                  className={cn(
+                    gameState.pitches[name] === '<no pitch>'
+                      ? 'text-neutral-400'
+                      : 'text-black',
+                  )}
+                  id={`pitch-${name}`}
+                ></span>
               </p>
             </div>
           );
@@ -115,6 +122,7 @@ export default function Results({ gameState, startGame }: any) {
           setHasClickedNext(true);
           startGame();
         }}
+        disabled={hasClickedNext}
       >
         Next round{' '}
         {hasClickedNext && <Loader2 className="ml-2 h-4 w-4 animate-spin" />}

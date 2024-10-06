@@ -14,6 +14,7 @@ export function typed(
 ) {
   return new Promise(async (resolve) => {
     await new Promise((r) => setTimeout(r, delay));
+    if (!s) return;
     new Typed(el, {
       strings: [s ?? ''],
       showCursor: false,

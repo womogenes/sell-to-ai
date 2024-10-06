@@ -50,12 +50,21 @@ export default function Game({
 
         // Submit
         console.log('submitting pitch...');
-        if (!isSubmittingPitch && !hasSubmittedPitch) submitPitch();
+        if (!isSubmittingPitch && !hasSubmittedPitch) {
+          console.log(
+            'isSubmittingPitch:',
+            isSubmittingPitch,
+            'hasSubmittedPitch:',
+            hasSubmittedPitch,
+          );
+          console.log('time is up, submitting pitch');
+          submitPitch();
+        }
       }
       setTimer(remainingTime);
     }, 16);
     return () => window.clearInterval(handle);
-  }, [isAnimationFinished]);
+  }, [isAnimationFinished, isSubmittingPitch, hasSubmittedPitch]);
 
   const submitPitch = () => {
     setIsSubmittingPitch(true);
@@ -106,7 +115,7 @@ export default function Game({
             )}
           >
             <div className="relative w-full pt-2">
-              <p className="absolute bottom-2 right-4 text-neutral-400">
+              <p className="absolute bottom-2 right-4 text-sm text-neutral-400">
                 {playerPitch.trim().length} / 140
               </p>
               <Textarea
