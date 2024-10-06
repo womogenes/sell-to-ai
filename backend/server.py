@@ -91,14 +91,10 @@ async def websocket_endpoint(websocket: WebSocket, game_code: str):
     try:
         while True:
             async def end_game():
-                if convincing_game.game_ended:
-                    return
                 await connection_manager.broadcast(json.dumps({"type": "pitches_done"}))
                 model_response = convincing_game.process_pitches()
                 await connection_manager.broadcast(json.dumps({"type": "pitches_processed",
-                                                                "thoughts": model_response["thoughts"],
-                                                                "winner": model_response["winner"],
-                                                                "state": convincing_game.serialize()}))
+                                                               "state": convincing_game.serialize()}))
                 
             async def schedule_end_game():
                 await asyncio.sleep(TURN_TIME)

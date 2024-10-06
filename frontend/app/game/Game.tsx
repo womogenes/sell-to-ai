@@ -94,7 +94,9 @@ export default function Game({
         <div className="flex h-full w-full flex-col gap-4 md:max-w-md">
           {/* Prompt */}
           <div className="flex h-full grow flex-col justify-end">
-            <p className="font-bold">Scenario</p>
+            <p className="mb-2 text-2xl font-bold">
+              Scenario {gameState.round_count}
+            </p>
             <p ref={scenarioEl}></p>
             <p className="mt-4" ref={convinceEl}></p>
             <p
@@ -115,7 +117,7 @@ export default function Game({
                 {playerPitch.trim().length} / 140
               </p>
               <Textarea
-                className="resize-none px-4 py-3"
+                className="resize-none px-4 py-3 text-base"
                 rows={6}
                 id="pitch-input"
                 value={playerPitch}
@@ -137,21 +139,24 @@ export default function Game({
                 Your pitch...
               </label>
             </div>
-            <Button
-              className="items-center transition-opacity"
-              onClick={() => submitPitch()}
-              disabled={
-                isSubmittingPitch ||
-                hasSubmittedPitch ||
-                playerPitch.trim().length === 0
-              }
-            >
-              Confirm
-              {isSubmittingPitch && (
-                <Loader2 className="ml-2 h-4 w-4 animate-spin" />
-              )}
-              {hasSubmittedPitch && <Check className="ml-2 h-4 w-4" />}
-            </Button>
+            <div className="flex items-center gap-4">
+              <Button
+                className="items-center transition-opacity"
+                onClick={() => submitPitch()}
+                disabled={
+                  isSubmittingPitch ||
+                  hasSubmittedPitch ||
+                  playerPitch.trim().length === 0
+                }
+              >
+                Confirm
+                {isSubmittingPitch && (
+                  <Loader2 className="ml-2 h-4 w-4 animate-spin" />
+                )}
+                {hasSubmittedPitch && <Check className="ml-2 h-4 w-4" />}
+              </Button>
+              {hasSubmittedPitch && <p>Waiting on other players...</p>}
+            </div>
           </div>
         </div>
       </div>

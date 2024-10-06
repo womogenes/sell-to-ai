@@ -8,6 +8,7 @@ import Lobby from './Lobby';
 import PlayerList from './PlayerList';
 import { Loader2 } from 'lucide-react';
 import Game from './Game';
+import Results from './Results';
 
 export default function GamePage() {
   const [gameCode, setGameCode] = useState<string | null>(null);
@@ -106,13 +107,17 @@ export default function GamePage() {
   };
 
   return (
-    <div className="flex h-full flex-col gap-4 md:flex-row">
+    <div className="flex h-full grow flex-col gap-4 md:flex-row">
       {isGameStarted ? (
-        <Game
-          gameState={gameState}
-          username={username}
-          submitPitch={submitPitch}
-        />
+        gameState.round_ended[gameState.round_count] ? (
+          <Results gameState={gameState} />
+        ) : (
+          <Game
+            gameState={gameState}
+            username={username}
+            submitPitch={submitPitch}
+          />
+        )
       ) : isConnected ? (
         <Lobby
           gameCode={gameCode}
@@ -130,11 +135,13 @@ export default function GamePage() {
       )}
 
       {/* List of players */}
-      <PlayerList
-        players={gameState?.players || []}
-        username={username}
-        isGameStarted={isGameStarted}
-      />
+      <div className="my-auto flex shrink-0 flex-col gap-2 px-6 md:w-80 md:px-0">
+        <PlayerList
+          players={gameState?.players || []}
+          username={username}
+          isGameStarted={isGameStarted}
+        />
+      </div>
     </div>
   );
 }

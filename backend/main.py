@@ -38,16 +38,16 @@ class ConvincingGame:
         self.winner: str = None
         self.game_started: bool = False
         self.round_count: int = 0
-        self.round_ended: {str: bool} = {}
+        self.round_ended: Dict[str, bool] = {}
         scenario_with_answers = random.choice(SCENARIOS_WITH_ANSWERS)
         self.scenario = scenario_with_answers["scenario"]
         self.items: List[str] = scenario_with_answers["nouns"]
         self.scores: Dict[str, List[int]] = {}
         self.expiry_time = datetime.fromtimestamp(0)
+        self.thoughts = ""
         for a in self.ai_players:
             self.scores[a] = []
         
-
     def get_items(self):
         return self.items
 
@@ -65,7 +65,7 @@ class ConvincingGame:
             self.ai_pitches[player] = AIPlayer.get_response(self.ai_prompts[player])
         self.game_started = True
         self.round_ended[self.round_count] = False
-        self.expiry_time = datetime.now() + timedelta(seconds=TURN_TIME)
+        self.expiry_time = datetime.now() + timedelta(seconds=TURN_TIME + 1)  # Give some grace time
         print("set self.expiry_time to", self.expiry_time)
         return self.prompts
 
@@ -91,7 +91,6 @@ class ConvincingGame:
 
     def process_pitches(self):
         # Call the OpenAI API to evaluate the pitches
-        self.game_ended = True
         self.round_ended[self.round_count] = True
         print(self.get_evaluation_prompt())
         response = client.chat.completions.create(
@@ -117,14 +116,14 @@ class ConvincingGame:
                 self.scores[p].append(1)
             else:
                 self.scores[p].append(0)
-        return {'thoughts': response.choices[0].message.content, 'winner': self.winner, 'scores': self.scores}
+        
+        self.thoughts = response.choices[0].message.content
+        return {'thoughts': self.thoughts, 'winner': self.winner, 'scores': self.scores}
 
     def reset_game(self):
         self.prompts: Dict[str, str] = {}
         self.pitches: Dict[str, str] = defaultdict(str)
         self.winner: str = None
-        self.game_started: bool = False
-        self.game_ended: bool = False
         self.round_count += 1
         scenario_with_answers = random.choice(SCENARIOS_WITH_ANSWERS)
         self.scenario = scenario_with_answers["scenario"]
@@ -148,6 +147,9 @@ class ConvincingGame:
             'scenario': self.scenario,
             'scores': self.scores,
             'expiry_time': self.expiry_time.isoformat(),
+            'round_count': self.round_count,  # int
+            'round_ended': self.round_ended,  # dict
+            'thoughts': self.thoughts,
         }
 
 class AIPlayer:

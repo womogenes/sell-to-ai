@@ -10,7 +10,7 @@ export default function PlayerList({
   isGameStarted: boolean;
 }) {
   return (
-    <div className="my-auto flex shrink-0 flex-col gap-2 px-6 md:w-80 md:px-0">
+    <>
       <h1 className="text-xl font-bold">
         Players{' '}
         <span className="font-normal text-neutral-400">
@@ -29,7 +29,7 @@ export default function PlayerList({
               key={name}
             >
               <img
-                className="m-2 ml-3 mr-2 aspect-square h-6 w-6 rounded-full bg-white"
+                className="m-1 ml-3 mr-1 aspect-square h-7 w-7 rounded-full"
                 src={`https://robohash.org/${name}.png?set=set3`}
                 alt="profile"
               />{' '}
@@ -51,6 +51,6 @@ export default function PlayerList({
           );
         })}
       </div>
-    </div>
+    </>
   );
 }

@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import localFont from 'next/font/local';
 import './globals.css';
+import Navbar from '@/components/Navbar';
 
 const geistSans = localFont({
   src: './fonts/GeistVF.woff',
@@ -28,7 +29,10 @@ export default function RootLayout({
       <head>
         <link rel="icon" href="https://fav.farm/🏪" />
       </head>
-      <body className={`${geistSans.className}`}>{children}</body>
+      <body className={`${geistSans.className} flex flex-col`}>
+        <Navbar />
+        {children}
+      </body>
     </html>
   );
 }
