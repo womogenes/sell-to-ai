@@ -15,7 +15,7 @@ export default function Lobby({
 }: {
   gameCode: string | null;
   username: string;
-  setUsername: Function;
+  setUsername: any;
   hasJoined: boolean;
   isJoining: boolean;
   startGame: any;
