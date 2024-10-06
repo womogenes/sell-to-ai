@@ -84,6 +84,7 @@ export default function GamePage() {
         if (data.type === 'new_round') {
           console.log('prompts:', data.state.prompts);
           setIsGameStarted(true);
+          setShowWinner(false);
         }
       } catch (e) {
         console.log(e);
