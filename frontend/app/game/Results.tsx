@@ -1,10 +1,17 @@
 import { Button } from '@/components/ui/button';
 import { cn, typed } from '@/lib/utils';
+import { Loader2 } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 
 export default function Results({ gameState, startGame }: any) {
   const scenarioEl = useRef(null);
   const [ready, setReady] = useState(false);
+  const [hasClickedNext, setHasClickedNext] = useState(false);
+
+  useEffect(() => {
+    if (!gameState) return;
+    if (!gameState.round_ended[gameState.round_count]) setHasClickedNext(false);
+  }, [gameState]);
 
   useEffect(() => {
     (async () => {
@@ -36,7 +43,12 @@ export default function Results({ gameState, startGame }: any) {
         {},
         500,
       );
-      await typed(document.querySelector('#winner'), gameState.winner, {}, 500);
+      await typed(
+        document.querySelector('#winner'),
+        gameState.winner,
+        {},
+        1000,
+      );
 
       await new Promise((r) => setTimeout(r, 1000));
       setReady(true);
@@ -99,9 +111,13 @@ export default function Results({ gameState, startGame }: any) {
           'mt-4 transition-all',
           ready ? 'opacity-100' : 'opacity-0',
         )}
-        onClick={startGame}
+        onClick={() => {
+          setHasClickedNext(true);
+          startGame();
+        }}
       >
-        Next round
+        Next round{' '}
+        {hasClickedNext && <Loader2 className="ml-2 h-4 w-4 animate-spin" />}
       </Button>
     </div>
   );

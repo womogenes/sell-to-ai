@@ -1,13 +1,16 @@
 import { cn } from '@/lib/utils';
+import { DollarSign, X } from 'lucide-react';
 
 export default function PlayerList({
   players,
   username,
   isGameStarted,
+  gameState,
 }: {
   players: any[];
   username: string;
   isGameStarted: boolean;
+  gameState: any;
 }) {
   return (
     <>
@@ -23,7 +26,9 @@ export default function PlayerList({
           return (
             <div
               className={cn(
-                username === name ? 'bg-orange-100' : 'bg-neutral-100',
+                username === name
+                  ? 'bg-orange-100 text-orange-900'
+                  : 'bg-neutral-100',
                 'flex items-center gap-0 rounded-full md:rounded-r-none',
               )}
               key={name}
@@ -33,7 +38,20 @@ export default function PlayerList({
                 src={`https://robohash.org/${name}.png?set=set3`}
                 alt="profile"
               />{' '}
-              {name}
+              <span className="w-24">{name}</span>
+              {/* Scoreboard */}
+              <div className="flex items-center gap-2">
+                {gameState.scores[name].map((score: number, i: number) => {
+                  return (
+                    <div key={i}>
+                      {score === 0 && <X className="h-4 w-4" />}
+                      {score === 1 && (
+                        <DollarSign className="h-4 w-4 text-green-800" />
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           );
         })}

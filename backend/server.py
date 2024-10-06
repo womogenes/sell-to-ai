@@ -98,7 +98,7 @@ async def websocket_endpoint(websocket: WebSocket, game_code: str):
                 
             async def schedule_end_game():
                 round = convincing_game.round_count
-                await asyncio.sleep(TURN_TIME)
+                await asyncio.sleep(TURN_TIME + 2)
                 if convincing_game.round_ended[round]:
                     return
                 await end_game()

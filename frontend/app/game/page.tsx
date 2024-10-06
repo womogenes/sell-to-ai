@@ -147,6 +147,7 @@ export default function GamePage() {
             players={gameState?.players || []}
             username={username}
             isGameStarted={isGameStarted}
+            gameState={gameState}
           />
         </div>
       </div>

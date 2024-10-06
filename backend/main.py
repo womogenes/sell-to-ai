@@ -65,8 +65,7 @@ class ConvincingGame:
             self.ai_pitches[player] = AIPlayer.get_response(self.ai_prompts[player])
         self.game_started = True
         self.round_ended[self.round_count] = False
-        self.expiry_time = datetime.now() + timedelta(seconds=TURN_TIME + 3)  # Give some grace time
-        print("set self.expiry_time to", self.expiry_time)
+        self.expiry_time = datetime.now() + timedelta(seconds=TURN_TIME)  # Give some grace time
         return self.prompts
 
     def add_player(self, player: str):
@@ -138,12 +137,18 @@ class ConvincingGame:
         combined_players = self.players + self.ai_players
         combined_prompts = {**self.prompts, **self.ai_prompts}
         combined_pitches = {**self.pitches, **self.ai_pitches}
+        for name in combined_players:
+            if name not in combined_pitches or combined_pitches[name].strip() == "":
+                combined_pitches[name] = "<no pitch>"
+
+        from pprint import pprint
+        pprint(combined_pitches)
         
         return {
             'players': combined_players,
             'prompts': combined_prompts,
             'items': {player: self.items[i] for i, player in enumerate(combined_players)},
-            'pitches': {name: pitch if pitch else "<no pitch>" for name, pitch in combined_pitches.items()},
+            'pitches': combined_pitches,
             'winner': self.winner,
             'game_started': self.game_started,
             'scenario': self.scenario,
@@ -152,7 +157,6 @@ class ConvincingGame:
             'round_count': self.round_count,  # int
             'round_ended': self.round_ended,  # dict
             'thoughts': self.thoughts,
-            'round_duration': TURN_TIME - 1,
         }
 
 class AIPlayer:
