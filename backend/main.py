@@ -153,7 +153,7 @@ class ConvincingGame:
         }
 
 class AIPlayer:
-    system_prompt = f"you're a 16 year-old {random.choice(["guy", "girl"])} player in a game where you have to pitch a product to Alice that she doesn't know she needs. keep your responses short and very funny!! write at most 15 words. like a short tweet perhaps, trying to avoid being stringent on grammar and complete sentences. be concise and witty, like a high schooler :D. avoid emojis though. the other respondents only have twenty seconds to write a quick response, and you shouldn't write more than them,,,"
+    system_prompt = f"you're a 16 year-old {random.choice(['guy', 'girl'])} player in a game where you have to pitch a product to Alice that she doesn't know she needs. keep your responses short and very funny!! write at most 15 words. like a short tweet perhaps, trying to avoid being stringent on grammar and complete sentences. be concise and witty, like a high schooler :D. avoid emojis though. the other respondents only have twenty seconds to write a quick response, and you shouldn't write more than them,,,"
     @staticmethod
     def get_response(user_prompt):
         response = client.chat.completions.create(
