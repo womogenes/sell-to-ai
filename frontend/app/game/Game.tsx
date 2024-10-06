@@ -51,7 +51,7 @@ export default function Game({
     // Start the countdown
     const endTime = new Date(gameState.expiry_time).getTime();
     const handle = window.setInterval(() => {
-      const timer = (endTime - new Date().getTime()) / 1000;
+      const timer = Math.max((endTime - new Date().getTime()) / 1000, 0);
       if (timer < 0) {
         window.clearInterval(handle);
 
@@ -111,7 +111,7 @@ export default function Game({
             )}
           >
             <div className="relative w-full pt-2">
-              <p className="absolute bottom-2 right-2 text-neutral-400">
+              <p className="absolute bottom-2 right-4 text-neutral-400">
                 {playerPitch.trim().length} / 140
               </p>
               <Textarea

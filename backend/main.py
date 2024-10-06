@@ -37,7 +37,8 @@ class ConvincingGame:
         self.ai_pitches: Dict[str, str] = {}
         self.winner: str = None
         self.game_started: bool = False
-        self.game_ended: bool = False
+        self.round_count: int = 0
+        self.round_ended: {str: bool} = {}
         scenario_with_answers = random.choice(SCENARIOS_WITH_ANSWERS)
         self.scenario = scenario_with_answers["scenario"]
         self.items: List[str] = scenario_with_answers["nouns"]
@@ -63,6 +64,7 @@ class ConvincingGame:
             self.ai_prompts[player] = f"{self.scenario} Convince Alice to buy: {self.items[i + len(self.players)]}!"
             self.ai_pitches[player] = AIPlayer.get_response(self.ai_prompts[player])
         self.game_started = True
+        self.round_ended[self.round_count] = False
         self.expiry_time = datetime.now() + timedelta(seconds=TURN_TIME)
         print("set self.expiry_time to", self.expiry_time)
         return self.prompts
@@ -90,6 +92,7 @@ class ConvincingGame:
     def process_pitches(self):
         # Call the OpenAI API to evaluate the pitches
         self.game_ended = True
+        self.round_ended[self.round_count] = True
         print(self.get_evaluation_prompt())
         response = client.chat.completions.create(
             model="gpt-4o-mini",
@@ -122,6 +125,7 @@ class ConvincingGame:
         self.winner: str = None
         self.game_started: bool = False
         self.game_ended: bool = False
+        self.round_count += 1
         scenario_with_answers = random.choice(SCENARIOS_WITH_ANSWERS)
         self.scenario = scenario_with_answers["scenario"]
         self.items: List[str] = scenario_with_answers["nouns"]
