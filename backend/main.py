@@ -95,9 +95,10 @@ class ConvincingGame:
         self.round_ended[self.round_count] = True
         print(self.get_evaluation_prompt())
         response = client.chat.completions.create(
-            model="gpt-4o-mini",
+            model="gpt-4o",
+            temperature=0.9,
             messages=[
-                {"role": "system", "content": f"you're alice. you're playing a game with some other players & you're the judge of their responses. you love good humor and want the other guys to enjoy the game as much as possible, obviously disregarding logic. role-play a person in the following scenario: {self.scenario}\nchoose the user who made the pitch that you think would make the game most enjoyable, which should be the funniest & cleverest. don't make your own twists on their suggestions when judging their suggestions. only reveal your final answer at the end of your instagram-like response. it's not fun if you choose the most standard one. keep in mind that the players are randomly assigned a word and can't pick their own word. judge based on the pitch, not based on the suggestion! it's the pitch that matters :D"},
+                {"role": "system", "content": f"you're alice. you're playing a game with some other players & you're the judge of their responses. you love good humor and want the other guys to enjoy the game as much as possible, obviously disregarding logic. role-play a person in the following scenario: {self.scenario}\nchoose the user who made the pitch that you think would make the game most enjoyable, which should be the funniest & cleverest. don't make your own twists on their suggestions when judging their suggestions. only reveal your final answer at the end of your instagram-like response. it's not fun if you choose the most standard one. keep in mind that the players are randomly assigned a word and can't pick their own word. judge based on the pitch, not based on the suggestion! it's the pitch that matters :D\nexample:\nUsername: dragon. dragon suggests buying: cash. Reasoning: the more cash you buy, the more you have for your road trip. road trips are expensive ok?\nUsername: mangosteen. mangosteen suggests buying: mention. Reasoning: dude, you need a car trash can. no one wants a smelly road trip\n\nresponse:\ndragon: super logical. i've never thought about it that way! heading to the grocery store rn\nmangosteen: i think you sold the wrong item bro. you were supposed to sell mentions, not trash cans"},
                 {"role": "user", "content": self.get_evaluation_prompt()}
             ]
         )
@@ -155,14 +156,14 @@ class ConvincingGame:
         }
 
 class AIPlayer:
-    system_prompt = f"you're a 16 year-old {random.choice(['guy', 'girl'])} player in a game where you have to pitch a product to Alice that she doesn't know she needs. keep your responses short and very funny!! write at most 15 words. like a short tweet perhaps, trying to avoid being stringent on grammar and complete sentences. be concise and witty, like a high schooler :D. avoid emojis though. the other respondents only have twenty seconds to write a quick response, and you shouldn't write more than them,,,"
+    system_prompt = f"you're a 16 year-old {random.choice(['guy', 'girl'])} player in a game where you have to pitch a product to Alice that she doesn't know she needs. keep your response short and very funny!! write at most 15 words. like a short tweet perhaps, trying to avoid being stringent on grammar and complete sentences. be concise and witty, like a high schooler :D. avoid emojis though. the other respondents only have twenty seconds to write a quick response, and you shouldn't write more than them,,,"
     @staticmethod
     def get_response(user_prompt):
         response = client.chat.completions.create(
-            model="gpt-4o-mini",
+            model="gpt-4o",
+            temperature=0.9,
             messages=[
                 {"role": "system", "content": AIPlayer.system_prompt},
-                # {"role": "user", "content": user_prompt + "\nremember to keep it lower case & like ur 16!1!~ don't try to sound so fancy tho, and don't bother saying hi. skip the emojis. make sure to sell the right product!! **don't** start your response with a question, it sounds *weird*,.. and don't end with punctuation please. it's annoying hard to type punctuation in general. keep it simple haha, and you don't need to be nice to everyone. be mean to at least one of them. remember you were born in 2006 ok. keep words simple too. you don't need to sound fancy, that makes you sound weird too. NO question marks AT ALL dude. you'll sound SO old. judge based on their pitches, not their responses, once again. ignore them if they didn't pitch what they were assigned, ya can't be breaking rules here"},
                 {"role": "user", "content": user_prompt + "\nremember to keep it lower case & like ur 16!1!~ don't try to sound so fancy tho, and don't bother saying hi. skip the emojis. make sure to sell the right product!! don't be weird,.. and don't end with punctuation please. it's annoying hard to type punctuation in general. keep it simple haha, and you don't need to be nice to everyone. be mean to at least one of them. remember you were born in 2006 ok. keep words simple too. you don't need to sound fancy, that makes you sound weird too. don't sound old. judge based on their pitches, not their responses, once again. call them out if they didn't pitch what they were assigned, they can't be breaking rules here."},
             ]
         )
