@@ -9,15 +9,11 @@ const geistSans = localFont({
   variable: '--font-geist-sans',
   weight: '100 900',
 });
-const geistMono = localFont({
-  src: './fonts/GeistMonoVF.woff',
-  variable: '--font-geist-mono',
-  weight: '100 900',
-});
 
 export const metadata: Metadata = {
   title: 'Sell to AI - Marketing Party Game',
-  description: 'Compete with your friends to come up with the most convincing ',
+  description:
+    'Compete with your friends to come up with the most convincing marketing pitches',
 };
 
 export default function RootLayout({
