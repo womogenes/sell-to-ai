@@ -87,6 +87,7 @@ class ConvincingGame:
         return ("\n".join([f"Username: {self.players[i]}. {self.players[i]} suggests buying: {self.items[i]}. Reasoning: {self.pitches.get(self.players[i], '')}" for i in range(len(self.players))]) 
             + ("\n" if len(self.ai_players) > 0 else "") 
             + "\n".join([f"Username: {self.ai_players[i]}. {self.ai_players[i]} suggests buying: {self.items[i + len(self.players)]}. Reasoning: {self.ai_pitches[self.ai_players[i]]}" for i in range(len(self.ai_players))])
+            + "\nconsider each of the pitches one-by-one and then pick the best/funniest pitch! keep your responses short and very funny!! write at most 15 words for each person. like a short tweet perhaps, trying to avoid being stringent on grammar and complete sentences. be concise and witty, like a high schooler :D. avoid emojis though,,,\nremember to keep it lower case & like ur 16!1!~ don't try to sound so fancy tho. skip the emojis. make sure to don't start your response with a question, it sounds *weird*,.. and don't end with punctuation please. it's annoying/hard to type punctuation in general. keep it simple haha"
         )
 
     def process_pitches(self):
@@ -96,7 +97,7 @@ class ConvincingGame:
         response = client.chat.completions.create(
             model="gpt-4o-mini",
             messages=[
-                {"role": "system", "content": f"You're Alice. You're playing a game with some other players. You're the judge of their responses. You love good humor and want the players to enjoy the game as much as possible, perhaps disregarding logic. Role play a person in the following scenario: {self.scenario}\nChoose the answer suggested that you think would make the game most enjoyable, which should be the most surprising or funny one. Don't make your own twists on their suggestions when juding their suggestions. Reason before answering with the correct answer. It's not fun if you choose the most standard one. Keep in mind that the players are randomly assigned a word and can't pick their own word. judge based on the pitch, not based on the suggestion!"},
+                {"role": "system", "content": f"you're alice. you're playing a game with some other players & you're the judge of their responses. you love good humor and want the other guys to enjoy the game as much as possible, obviously disregarding logic. role-play a person in the following scenario: {self.scenario}\nchoose the user who made the pitch that you think would make the game most enjoyable, which should be the funniest & cleverest. don't make your own twists on their suggestions when judging their suggestions. only reveal your final answer at the end of your instagram-like response. it's not fun if you choose the most standard one. keep in mind that the players are randomly assigned a word and can't pick their own word. judge based on the pitch, not based on the suggestion! it's the pitch that matters :D"},
                 {"role": "user", "content": self.get_evaluation_prompt()}
             ]
         )
@@ -160,7 +161,8 @@ class AIPlayer:
             model="gpt-4o-mini",
             messages=[
                 {"role": "system", "content": AIPlayer.system_prompt},
-                {"role": "user", "content": user_prompt + "\nremember to keep it lower case & like ur 16!1!~ don't try to sound so fancy tho, and don't bother saying hi. skip the emojis. make sure to sell the right product!! don't start your response with a question, it sounds *weird*,.. and don't end with punctuation please. it's annoying hard to type punctuation in general. keep it simple haha"},
+                # {"role": "user", "content": user_prompt + "\nremember to keep it lower case & like ur 16!1!~ don't try to sound so fancy tho, and don't bother saying hi. skip the emojis. make sure to sell the right product!! **don't** start your response with a question, it sounds *weird*,.. and don't end with punctuation please. it's annoying hard to type punctuation in general. keep it simple haha, and you don't need to be nice to everyone. be mean to at least one of them. remember you were born in 2006 ok. keep words simple too. you don't need to sound fancy, that makes you sound weird too. NO question marks AT ALL dude. you'll sound SO old. judge based on their pitches, not their responses, once again. ignore them if they didn't pitch what they were assigned, ya can't be breaking rules here"},
+                {"role": "user", "content": user_prompt + "\nremember to keep it lower case & like ur 16!1!~ don't try to sound so fancy tho, and don't bother saying hi. skip the emojis. make sure to sell the right product!! don't be weird,.. and don't end with punctuation please. it's annoying hard to type punctuation in general. keep it simple haha, and you don't need to be nice to everyone. be mean to at least one of them. remember you were born in 2006 ok. keep words simple too. you don't need to sound fancy, that makes you sound weird too. don't sound old. judge based on their pitches, not their responses, once again. call them out if they didn't pitch what they were assigned, they can't be breaking rules here."},
             ]
         )
         return response.choices[0].message.content
@@ -174,3 +176,7 @@ if __name__ == "__main__":
         print("")
         print(g.ai_prompts[g.ai_players[i]])
         print(a)
+    r = g.process_pitches()
+    print()
+    print(r["thoughts"])
+    print(r["winner"])
