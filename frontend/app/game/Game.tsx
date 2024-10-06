@@ -39,18 +39,20 @@ export default function Game({
     if (!isAnimationFinished) return;
 
     // Start the countdown
-    const endTime = new Date(gameState.expiry_time).getTime();
+    const roundDuration = gameState.round_duration;
+    const startTime = new Date().getTime();
     const handle = window.setInterval(() => {
-      const timer = Math.max((endTime - new Date().getTime()) / 1000, 0);
-      if (timer < 0) {
+      const elapsedTime = (new Date().getTime() - startTime) / 1000;
+      const remainingTime = Math.max(roundDuration - elapsedTime, 0);
+      if (remainingTime <= 0) {
         window.clearInterval(handle);
 
         // Submit
         console.log('submitting pitch...');
         if (!isSubmittingPitch && !hasSubmittedPitch) submitPitch();
       }
-      setTimer(timer);
-    });
+      setTimer(remainingTime);
+    }, 100);
     return () => window.clearInterval(handle);
   }, [isAnimationFinished]);
 
