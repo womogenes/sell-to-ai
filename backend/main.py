@@ -76,7 +76,7 @@ class ConvincingGame:
         return False
 
     def get_evaluation_prompt(self):
-        return ("\n".join([f"Username: {self.players[i]}. {self.players[i]} suggests buying: {self.items[i]}. Reasoning: {self.pitches[self.players[i]]}" for i in range(len(self.players))]) 
+        return ("\n".join([f"Username: {self.players[i]}. {self.players[i]} suggests buying: {self.items[i]}. Reasoning: {self.pitches.get(self.players[i], '')}" for i in range(len(self.players))]) 
             + ("\n" if len(self.ai_players) > 0 else "") 
             + "\n".join([f"Username: {self.ai_players[i]}. {self.ai_players[i]} suggests buying: {self.items[i + len(self.players)]}. Reasoning: {self.ai_pitches[self.ai_players[i]]}" for i in range(len(self.ai_players))])
         )

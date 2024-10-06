@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
-import { Loader2 } from 'lucide-react';
+import { Check, Loader2 } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import Typed from 'typed.js';
 
@@ -87,10 +87,10 @@ export default function Game({
           </div>
         </div>
       )}
-      <div className="flex w-full flex-col items-center justify-center p-6 pt-16">
-        <div className="w-full md:max-w-md">
+      <div className="flex w-full flex-col items-center p-6 pt-16">
+        <div className="flex h-full w-full flex-col gap-4 md:max-w-md">
           {/* Prompt */}
-          <div className="flex flex-col">
+          <div className="flex h-full grow flex-col justify-end">
             <p className="font-bold">Scenario</p>
             <p ref={scenarioEl}></p>
             <p className="mt-4" ref={convinceEl}></p>
@@ -101,12 +101,10 @@ export default function Game({
           </div>
 
           {/* Textbox */}
-          <p>{hasSubmittedPitch}</p>
           <div
             className={cn(
+              'relative mt-4 flex h-full grow flex-col items-start gap-4 pt-2 transition-opacity duration-1000',
               isAnimationFinished ? 'opacity-100' : 'opacity-0',
-              hasSubmittedPitch && 'hidden',
-              'relative mt-8 flex flex-col items-start gap-4 pt-2 transition-opacity duration-1000',
             )}
           >
             <label
@@ -137,12 +135,17 @@ export default function Game({
             <Button
               className="items-center transition-opacity"
               onClick={() => submitPitch()}
-              disabled={isSubmittingPitch || playerPitch.trim().length === 0}
+              disabled={
+                isSubmittingPitch ||
+                hasSubmittedPitch ||
+                playerPitch.trim().length === 0
+              }
             >
               Confirm
               {isSubmittingPitch && (
                 <Loader2 className="ml-2 h-4 w-4 animate-spin" />
               )}
+              {hasSubmittedPitch && <Check className="ml-2 h-4 w-4" />}
             </Button>
           </div>
         </div>
