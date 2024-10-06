@@ -8,14 +8,14 @@ export default function Results({ gameState }: any) {
     (async () => {
       await typed(scenarioEl.current, gameState.scenario);
       for (let name of gameState.players) {
-        await typed(document.querySelector(`#name-${name}`), name);
+        await typed(document.querySelector(`#name-${name}`), name ?? '');
         await typed(
           document.querySelector(`#item-${name}`),
-          gameState.items[name],
+          gameState.items[name] ?? '',
         );
         await typed(
           document.querySelector(`#pitch-${name}`),
-          gameState.pitches[name],
+          gameState.pitches[name] ?? '',
         );
       }
     })();

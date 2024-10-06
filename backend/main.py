@@ -65,7 +65,7 @@ class ConvincingGame:
             self.ai_pitches[player] = AIPlayer.get_response(self.ai_prompts[player])
         self.game_started = True
         self.round_ended[self.round_count] = False
-        self.expiry_time = datetime.now() + timedelta(seconds=TURN_TIME + 1)  # Give some grace time
+        self.expiry_time = datetime.now() + timedelta(seconds=TURN_TIME - 1)  # Give some grace time
         print("set self.expiry_time to", self.expiry_time)
         return self.prompts
 
