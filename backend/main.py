@@ -149,23 +149,24 @@ class ConvincingGame:
         }
 
 class AIPlayer:
-    system_prompt = "You're a player in a game where you have to pitch a product to Alice that she doesn't know she needs. Keep your responses short and very funny! Write at most 20 words, trying to avoid being stringent on grammar and complete sentences. you should be concise and witty, perhaps like a high schooler :D. avoid emojis though. the other respondents only have twenty seconds to write a quick response, and you shouldn't write more than them,,,"
+    system_prompt = f"you're a 16 year-old {random.choice(["guy", "girl"])} player in a game where you have to pitch a product to Alice that she doesn't know she needs. keep your responses short and very funny!! write at most 15 words. like a short tweet perhaps, trying to avoid being stringent on grammar and complete sentences. be concise and witty, like a high schooler :D. avoid emojis though. the other respondents only have twenty seconds to write a quick response, and you shouldn't write more than them,,,"
     @staticmethod
     def get_response(user_prompt):
         response = client.chat.completions.create(
             model="gpt-4o-mini",
             messages=[
                 {"role": "system", "content": AIPlayer.system_prompt},
-                {"role": "user", "content": user_prompt}
+                {"role": "user", "content": user_prompt + "\nremember to keep it lower case & like ur 16!1!~ don't try to sound so fancy tho, and don't bother saying hi. skip the emojis. make sure to sell the right product!! don't start your response with a question, it sounds *weird*,.. and don't end with punctuation please. it's annoying hard to type punctuation in general. keep it simple haha"},
             ]
         )
         return response.choices[0].message.content
 
 if __name__ == "__main__":
     g = ConvincingGame()
-    print(g.add_player("P"))
-    print(g.add_player("Q"))
-    print(g.start_game())
-    print(g.submit_pitch("P", g.items[0] + "s give heat"))
-    print(g.submit_pitch("Q", g.items[1] + "s give heat"))
-    print(g.process_pitches())
+    g.start_game()
+    print("scenario:", g.scenario)
+    print(g.ai_pitches)
+    for i, a in enumerate(g.ai_pitches.values()):
+        print("")
+        print(g.ai_prompts[g.ai_players[i]])
+        print(a)
