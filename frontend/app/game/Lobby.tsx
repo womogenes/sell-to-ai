@@ -64,9 +64,12 @@ export default function Lobby({
                   setHasStartedGame(true);
                   startGame();
                 }}
+                disabled={hasStartedGame}
               >
                 Start game{' '}
-                {hasStartedGame && <Loader2 className="ml-2 h-6 w-6" />}
+                {hasStartedGame && (
+                  <Loader2 className="ml-2 h-4 w-4 animate-spin" />
+                )}
               </Button>
             </div>
           ) : (

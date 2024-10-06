@@ -44,7 +44,7 @@ class ConvincingGame:
         self.scores: Dict[str, List[int]] = {}
         self.expiry_time = datetime.fromtimestamp(0)
         for a in self.ai_players:
-            self.scores[a] = 0
+            self.scores[a] = []
         
 
     def get_items(self):
@@ -63,7 +63,7 @@ class ConvincingGame:
             self.ai_prompts[player] = f"{self.scenario} Convince Alice to buy: {self.items[i + len(self.players)]}!"
             self.ai_pitches[player] = AIPlayer.get_response(self.ai_prompts[player])
         self.game_started = True
-        self.expiry_time = datetime.utcnow() + timedelta(seconds=TURN_TIME)
+        self.expiry_time = datetime.now() + timedelta(seconds=TURN_TIME)
         print("set self.expiry_time to", self.expiry_time)
         return self.prompts
 
