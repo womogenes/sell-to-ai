@@ -3,6 +3,7 @@ import random
 from dotenv import load_dotenv
 import os
 from openai import OpenAI
+import json
 
 load_dotenv()
 api_key = os.getenv("OPENAI_API_KEY")
@@ -18,6 +19,8 @@ client = OpenAI(api_key=api_key)
 
 with open("scenarios_with_answers.json", encoding="utf8") as f:
     SCENARIOS_WITH_ANSWERS = f.read()
+SCENARIOS_WITH_ANSWERS = json.loads(SCENARIOS_WITH_ANSWERS)
+
 class ConvincingGame:
     def __init__(self):
         self.players: List[str] = []
