@@ -3,6 +3,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
 import { Loader2 } from 'lucide-react';
 import { useState } from 'react';
+import halMonopolyMan2 from '@/public/hal_monopoly_man_2.png';
+import Image from 'next/image';
 
 export default function Lobby({
   gameCode,
@@ -40,11 +42,7 @@ export default function Lobby({
           )}
         </div>
 
-        <img
-          src="https://i.pinimg.com/originals/a9/eb/c4/a9ebc49718ce98c61a8563c945712eee.png"
-          alt="monopoly man running"
-          width={200}
-        />
+        <Image src={halMonopolyMan2} alt="monopoly man running" width={200} />
 
         {/* Name input or profile display */}
         <div className="h-32 pt-2">

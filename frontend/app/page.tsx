@@ -11,8 +11,10 @@ import {
 } from '@/components/ui/carousel';
 import { Input } from '@/components/ui/input';
 import Autoplay from 'embla-carousel-autoplay';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import halMonopolyMan from '../public/hal_monopoly_main.png';
 
 export default function Landing() {
   const router = useRouter();
@@ -24,11 +26,7 @@ export default function Landing() {
       <div className="flex h-full flex-col items-center justify-center p-6">
         {/* Title */}
         <div className="flex w-full flex-col items-center justify-center gap-3">
-          <img
-            width={300}
-            src="https://www.pngkey.com/png/full/805-8051416_monopoly-man.png"
-            alt="Monopoly man"
-          ></img>
+          <Image width={300} src={halMonopolyMan} alt="AI monopoly man"></Image>
           <div className="relative text-4xl font-black uppercase tracking-tighter transition-transform hover:scale-110 md:text-6xl">
             <h1 className="absolute left-1 top-1 whitespace-pre opacity-20">
               Sell to AI
