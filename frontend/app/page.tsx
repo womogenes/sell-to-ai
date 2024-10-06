@@ -21,7 +21,7 @@ export default function Landing() {
   return (
     // Two columns
     <>
-      <div className="flex h-full flex-col justify-center p-6">
+      <div className="flex h-full flex-col items-center justify-center p-6">
         {/* Title */}
         <div className="flex w-full flex-col items-center justify-center gap-3">
           <img
@@ -39,7 +39,7 @@ export default function Landing() {
         </div>
 
         {/* Left column */}
-        <div className="flex flex-col justify-center md:max-w-72">
+        <div className="flex flex-col items-center justify-center md:max-w-72">
           <div className="p-12">
             <h2 className="mb-4 text-xl font-bold">How to play</h2>
             <Carousel
@@ -72,7 +72,7 @@ export default function Landing() {
         </div>
 
         {/* Right column */}
-        <div className="flex w-full flex-col justify-center md:max-w-60">
+        <div className="flex w-full flex-col items-center justify-center md:max-w-60">
           <Card className="flex flex-col gap-1 p-4">
             <label htmlFor="game-code-input" className="absolute -top-full">
               Game code

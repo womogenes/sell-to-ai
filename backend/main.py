@@ -65,8 +65,7 @@ class ConvincingGame:
             self.ai_pitches[player] = AIPlayer.get_response(self.ai_prompts[player])
         self.game_started = True
         self.round_ended[self.round_count] = False
-        self.expiry_time = datetime.now() + timedelta(seconds=TURN_TIME)  # Give some grace time
-        print("start_game, expiry time:", self.expiry_time)
+        self.expiry_time = datetime.utcnow() + timedelta(seconds=TURN_TIME)  # Give some grace time
         return self.prompts
 
     def add_player(self, player: str):
@@ -149,7 +148,7 @@ class ConvincingGame:
             'game_started': self.game_started,
             'scenario': self.scenario,
             'scores': self.scores,
-            'expiry_time': self.expiry_time.isoformat(),
+            'expiry_time': int(self.expiry_time.timestamp() * 1000),
             'round_count': self.round_count,  # int
             'round_ended': self.round_ended,  # dict
             'thoughts': self.thoughts,
