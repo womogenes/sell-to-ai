@@ -1,51 +1,60 @@
 [
     {
-        "scenario": "Alice is heading to a music festival but hasn\u2019t bought any of the camping essentials for the weekend!",
+        "scenario": "You're about to give a TED talk on solving world hunger, but you've lost your presentation materials and need a replacement.",
         "nouns": [
-            "resort",
-            "candidate",
-            "title",
-            "plastic",
-            "muscle",
-            "assumption",
-            "judge",
-            "district",
-            "farmer",
-            "ratio",
-            "crazy",
-            "employment"
+            "ouija board",
+            "etch a sketch",
+            "maracas",
+            "hula hoop",
+            "sock puppet",
+            "vuvuzela",
+            "magic 8 ball",
+            "mood ring",
+            "yo-yo",
+            "kaleidoscope"
         ]
     },
     {
         "scenario": "Alice is preparing for a long road trip but notices she hasn't purchased any of the supplies for the car!",
         "nouns": [
-            "mention",
             "savings",
             "guitar",
             "father",
             "sex",
             "drink",
-            "tip",
-            "angle",
-            "sensitive",
             "shirt",
-            "life"
+            "drugs",
+            "kazoo",
+            "rope"
         ]
     },
     {
         "scenario": "Alice is getting ready for her first day of college but hasn\u2019t bought any of her textbooks or school supplies!",
         "nouns": [
-            "entertainment",
-            "leadership",
             "chemical",
-            "power",
             "button",
             "smile",
             "knife",
             "boat",
             "tackle",
             "woman",
-            "bridge"
+            "bridge",
+            "needle"
+        ]
+    },
+    {
+        "scenario": "The zombie apocalypse is here, and you need to find a way to defeat the undead.",
+        "nouns": [
+            "rubber chicken",
+            "pogo stick",
+            "sousaphone",
+            "piñata",
+            "bubble machine",
+            "trombone",
+            "unicycle",
+            "waffle iron",
+            "egg timer",
+            "melon baller"
         ]
     }
 ]
