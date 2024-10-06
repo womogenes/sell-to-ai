@@ -65,7 +65,7 @@ class ConvincingGame:
         return False
 
     def get_evaluation_prompt(self):
-        return "\n".join([f"Username: {self.players[i]}. {self.players[i]} suggests buying: {self.items[i]}. Reasoning: {self.pitches[self.players[i]]}" for i in range(len(self.players))])
+        return "\n".join([f"Username: {self.players[i]}. {self.players[i]} suggests buying: {self.items[i]}. Reasoning: {self.pitches.get(self.players[i], '')}" for i in range(len(self.players))])
 
     def process_pitches(self):
         # Call the OpenAI API to evaluate the pitches
