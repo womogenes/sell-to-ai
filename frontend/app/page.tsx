@@ -33,7 +33,7 @@ export default function Landing() {
             </h1>
             <h1 className="-mb-1 whitespace-pre opacity-80">Sell to AI</h1>
           </div>
-          <p>be the best salesperson</p>
+          <p>outpitch, outsmart, outplay</p>
         </div>
 
         {/* Left column */}
